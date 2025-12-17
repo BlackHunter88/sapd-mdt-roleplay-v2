@@ -1,0 +1,1472 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAPD PHANTOM V6 [FIXED PDF]</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;700&family=Rajdhani:wght@500;700;800&family=Courier+Prime:wght@400;700&family=Libre+Barcode+39+Text&family=Black+Ops+One&display=swap" rel="stylesheet">
+    
+    <style>
+        /* === CORE VARS === */
+        :root {
+            --bg: #030303;
+            --panel: #0a0a0c;
+            --border: #1f2937;
+            --primary: #3b82f6; 
+            --accent: #06b6d4;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --text: #f3f4f6;
+            --text-mute: #6b7280;
+            --font-ui: 'Inter', sans-serif;
+            --font-tech: 'Rajdhani', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            --font-doc: 'Courier Prime', monospace;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg); color: var(--text); font-family: var(--font-ui);
+            height: 100vh; width: 100vw; display: flex; overflow: hidden;
+            background-image: radial-gradient(#1e293b 1px, transparent 1px);
+            background-size: 25px 25px;
+        }
+
+        /* === SIDEBAR === */
+        .sidebar {
+            width: 270px; background: #050505; border-right: 1px solid var(--border);
+            display: flex; flex-direction: column; padding: 1.5rem; z-index: 50; flex-shrink: 0; overflow-y: auto;
+        }
+        
+        .sidebar::-webkit-scrollbar { width: 5px; }
+        .sidebar::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+
+        .brand { display: flex; align-items: center; gap: 12px; margin-bottom: 2rem; border-bottom: 1px solid var(--border); padding-bottom: 1.5rem; }
+        .brand-icon { width: 42px; height: 42px; background: rgba(59,130,246,0.1); border: 1px solid var(--primary); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--primary); font-size: 1.2rem; box-shadow: 0 0 15px rgba(59,130,246,0.2); }
+        .brand-text h1 { font-family: var(--font-tech); font-size: 1.5rem; font-weight: 800; line-height: 1; color: #fff; letter-spacing: 1px; }
+        .brand-text span { font-size: 0.65rem; color: var(--accent); letter-spacing: 2px; font-weight: 700; text-transform: uppercase; }
+
+        .nav-label { font-size: 0.65rem; color: var(--text-mute); font-weight: 800; margin: 1.5rem 0 0.5rem; letter-spacing: 1px; }
+        nav button {
+            width: 100%; background: transparent; border: 1px solid transparent; color: var(--text-mute); padding: 12px; text-align: left; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 12px; font-size: 0.85rem; transition: 0.2s; margin-bottom: 4px; font-weight: 500;
+        }
+        nav button:hover { background: rgba(255,255,255,0.03); color: #fff; padding-left: 18px; }
+        nav button.active { background: rgba(59,130,246,0.1); border-color: rgba(59,130,246,0.3); color: var(--primary); font-weight: 700; box-shadow: inset 3px 0 0 var(--primary); }
+
+        /* TIMER WIDGET */
+        .widget-box { margin-top: auto; background: #0a0b0e; border: 1px solid var(--border); padding: 15px; border-radius: 8px; text-align: center; }
+        .widget-title { font-size: 0.65rem; color: var(--text-mute); font-weight: 700; letter-spacing: 1px; margin-bottom: 5px; }
+        #patrolTimer { font-family: var(--font-mono); font-size: 1.8rem; font-weight: 700; color: #fff; margin: 5px 0; }
+        .widget-actions { display: flex; justify-content: center; gap: 8px; margin-top: 10px; }
+        .btn-mini { width: 32px; height: 32px; border-radius: 4px; border: 1px solid var(--border); background: transparent; color: var(--text-mute); cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; }
+        .btn-mini:hover { border-color: var(--primary); color: var(--primary); background: rgba(59,130,246,0.1); }
+
+        /* === MAIN CONTENT === */
+        main { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
+        .view { display: none; height: 100%; flex-direction: column; animation: fadeIn 0.3s ease; }
+        .view.active { display: flex; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .panel-head { display: flex; justify-content: space-between; align-items: center; margin: 1.5rem; flex-shrink: 0; padding-bottom: 1rem; border-bottom: 1px solid var(--border); }
+        .panel-head h2 { font-family: var(--font-tech); font-size: 2rem; font-weight: 700; letter-spacing: 1px; display: flex; align-items: center; gap: 12px; color: #fff; }
+        .badge { background: rgba(16,185,129,0.1); color: var(--success); padding: 4px 12px; border-radius: 4px; font-size: 0.75rem; font-weight: 700; letter-spacing: 1px; border: 1px solid rgba(16,185,129,0.2); }
+
+        /* LAYOUTS */
+        .grid-split { display: grid; grid-template-columns: 2fr 1.2fr; gap: 1.5rem; height: 100%; overflow: hidden; padding: 0 1.5rem 1.5rem; }
+        .grid-pdf { display: grid; grid-template-columns: 380px 1fr; gap: 1.5rem; height: 100%; overflow: hidden; padding: 0 1.5rem 1.5rem; }
+        .panel { background: var(--panel); border: 1px solid var(--border); border-radius: 8px; display: flex; flex-direction: column; overflow: hidden; }
+        .scroll-y { overflow-y: auto; padding: 1.5rem; flex: 1; }
+        .no-scroll { padding: 1.5rem; display: flex; flex-direction: column; }
+        .full-h { height: 100%; }
+
+        /* INPUTS */
+        .input-group { margin-bottom: 1rem; }
+        .input-group label { display: block; font-size: 0.7rem; color: var(--text-mute); margin-bottom: 6px; font-weight: 700; text-transform: uppercase; }
+        input, select, textarea { width: 100%; background: #121215; border: 1px solid var(--border); color: #fff; padding: 12px 15px; border-radius: 4px; font-family: var(--font-ui); font-size: 0.9rem; transition: 0.2s; }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 2px rgba(59,130,246,0.1); }
+
+        /* === CALCULATOR TILES === */
+        .charges-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; padding-bottom: 20px; }
+        .charge-tile { 
+            background: #111; border: 1px solid var(--border); border-radius: 6px; padding: 12px; cursor: pointer; transition: all 0.1s; 
+            display: flex; flex-direction: column; justify-content: space-between; height: 100px; position: relative; overflow: hidden;
+        }
+        .charge-tile::before { content:''; position: absolute; top:0; left:0; width:4px; height:100%; background: var(--border); transition: 0.2s; }
+        .charge-tile:hover { background: #1a1a1d; transform: translateY(-2px); }
+        .charge-tile.selected { background: rgba(59, 130, 246, 0.05); border-color: var(--primary); }
+        .charge-tile.selected::before { background: var(--primary); }
+        .charge-tile.selected .tile-name { color: var(--primary); }
+
+        .tile-code { font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-mute); font-weight: 700; margin-bottom: 5px; margin-left: 8px; }
+        .tile-name { font-size: 0.85rem; font-weight: 700; line-height: 1.2; flex: 1; color: #e5e7eb; margin-left: 8px; }
+        .tile-stat { font-size: 0.7rem; color: var(--text-mute); text-align: right; border-top: 1px solid #222; padding-top: 8px; margin-top: 8px; }
+
+        .summary-box { background: #050505; border: 1px solid var(--border); border-radius: 6px; padding: 20px; margin-bottom: 20px; }
+        .stat-flex { display: flex; justify-content: space-between; margin-bottom: 15px; }
+        .stat-unit { text-align: center; width: 48%; background: #111; padding: 10px; border-radius: 4px; border: 1px solid var(--border); }
+        .stat-unit small { display: block; font-size: 0.65rem; color: var(--text-mute); margin-bottom: 4px; font-weight: 700; }
+        .stat-unit strong { font-family: var(--font-mono); font-size: 1.6rem; color: #fff; }
+        .c-red { color: var(--danger) !important; } .c-gold { color: var(--warning) !important; }
+        
+        .cmd-output { background: #080808; border: 1px dashed var(--success); padding: 15px; border-radius: 6px; font-family: var(--font-mono); font-size: 0.85rem; color: var(--success); cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+        .btn-reset { width: 100%; background: transparent; border: 1px solid var(--danger); color: var(--danger); padding: 12px; border-radius: 6px; cursor: pointer; font-weight: 700; font-size: 0.85rem; transition: 0.2s; }
+        .btn-reset:hover { background: var(--danger); color: #fff; }
+        
+        /* NEW STYLES FOR ADDONS */
+        .cmd-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; }
+        .cmd-card { background: #121215; border-left: 3px solid var(--accent); padding: 15px; cursor: pointer; transition: 0.2s; }
+        .cmd-card:hover { background: #1a1a1e; transform: translateX(5px); }
+        .cmd-card code { font-family: var(--font-mono); font-size: 1.1rem; color: var(--accent); display: block; margin-bottom: 5px; }
+        .cmd-card span { font-size: 0.8rem; color: #888; }
+        
+        .filter-pills { display: flex; gap: 10px; margin-bottom: 15px; }
+        .pill { background: transparent; border: 1px solid #333; color: #888; padding: 5px 15px; border-radius: 20px; cursor: pointer; font-size: 0.8rem; }
+        .pill.active { background: var(--text); color: #000; border-color: #fff; font-weight: bold; }
+        
+        .sop-list { display: flex; flex-direction: column; gap: 10px; }
+        .sop-item { background: #121215; padding: 15px; border-left: 2px solid #333; }
+        .sop-item h4 { color: #fff; margin-bottom: 5px; }
+        .sop-item p { color: #aaa; font-size: 0.9rem; }
+        
+        .btn-action { background: var(--primary); color: #fff; border: none; padding: 10px; border-radius: 4px; cursor: pointer; width: 100%; font-weight: bold; margin-top: 10px; }
+        .btn-secondary { background: #333; color: #fff; border: none; padding: 10px; border-radius: 4px; cursor: pointer; width: 100%; font-weight: bold; margin-top: 10px; }
+
+        /* === PDF ENGINE (A4 FIXED 1 PAGE - FIXED FOR PRINTING) === */
+        .paper-viewport { background: #404040; padding: 40px; overflow-y: auto; display: flex; justify-content: center; border-radius: 8px; }
+        
+        .paper-sheet { 
+            background: #fff; width: 210mm; height: 297mm; /* Strict A4 */
+            padding: 20mm; color: #000; font-family: var(--font-doc); font-size: 10pt; 
+            box-shadow: 0 0 50px rgba(0,0,0,0.5); position: relative; 
+            display: flex; flex-direction: column; overflow: hidden; box-sizing: border-box;
+        }
+        
+        .watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%) rotate(-45deg); font-size: 7rem; font-weight: 900; color: rgba(0,0,0,0.03); pointer-events: none; border: 10px solid rgba(0,0,0,0.03); padding: 20px; text-transform: uppercase; white-space: nowrap; z-index: 0; }
+        
+        .doc-header { border-bottom: 3px double #000; padding-bottom: 15px; margin-bottom: 20px; display: flex; align-items: center; gap: 20px; position: relative; z-index: 1; flex-shrink: 0; }
+        .doc-header img { width: 80px; }
+        .header-text h1 { font-family: 'Times New Roman', serif; font-size: 18pt; margin: 0; color: #000; letter-spacing: -1px; }
+        .header-text h2 { font-family: 'monaco', monospace; font-size: 9pt; font-weight: 700; margin: 5px 0 0; text-transform: uppercase; letter-spacing: 2px; color: #333; }
+        
+        .doc-title-bar { 
+            background: #000; color: #fff; text-align: center; font-weight: bold; font-family: 'Arial', sans-serif; 
+            padding: 6px; margin-bottom: 20px; font-size: 12pt; text-transform: uppercase; border: 1px solid #000;
+            -webkit-print-color-adjust: exact; print-color-adjust: exact; flex-shrink: 0;
+        }
+
+        .grid-form { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 1px solid #000; margin-bottom: 20px; flex-shrink: 0; }
+        .grid-cell { border: 1px solid #000; padding: 6px 10px; margin: -1px 0 0 -1px; }
+        .cell-label { font-size: 7pt; font-weight: bold; text-transform: uppercase; font-family: 'Arial', sans-serif; color: #444; display: block; }
+        .cell-value { font-size: 10pt; font-weight: bold; font-family: 'Courier Prime', monospace; display: block; min-height: 1.2em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        
+        /* CONTENT FLEX FIX */
+        .doc-content { flex: 1; line-height: 1.4; white-space: pre-wrap; text-align: justify; font-size: 10pt; overflow: hidden; position: relative; z-index: 1; }
+        
+        .doc-footer { 
+            margin-top: auto; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: flex-end; 
+            padding-top: 20px; 
+            border-top: 1px solid #ddd; 
+            position: relative; 
+            z-index: 1; 
+            flex-shrink: 0; 
+            margin-bottom: 50px;
+        }
+        .sig-box { text-align: left; }
+        .sig-line { border-bottom: 1px solid #000; min-width: 220px; margin-top: 30px; padding-bottom: 5px; font-weight: bold; font-family: 'Lucida Handwriting', cursive; font-size: 12pt; }
+        .dept-line { font-family: 'Arial', sans-serif; font-weight: bold; font-size: 8pt; text-transform: uppercase; margin-top: 5px; color: #333; letter-spacing: 1px; }
+        .stamp-official { border: 4px solid #b00; color: #b00; padding: 8px 15px; font-weight: 900; transform: rotate(-5deg); opacity: 0.8; font-family: 'Black Ops One', cursive; font-size: 1.4rem; text-transform: uppercase; }
+        .doc-barcode { font-family: 'Libre Barcode 39 Text', cursive; font-size: 2rem; }
+
+        .copy-btn { background: var(--primary); border: none; color: #fff; padding: 12px; border-radius: 4px; cursor: pointer; font-size: 0.85rem; width: 100%; font-weight: bold; margin-top: 10px; }
+        .copy-btn:hover { background: #2563eb; }
+
+        /* === EVIDENCE LABEL === */
+        .evidence-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: center; height: 100%; padding: 0 1.5rem 1.5rem; }
+        .label-preview { background: #fff; color: #000; padding: 15px; border-radius: 4px; border: 1px solid #ccc; font-family: 'Courier Prime', monospace; cursor: pointer; margin-top: 15px; width: 400px; }
+        .ev-header { background: #000; color: #fff; padding: 5px; font-weight: bold; text-align: center; margin-bottom: 10px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        .ev-barcode { font-family: 'Libre Barcode 39 Text', cursive; font-size: 2.5rem; text-align: center; margin-top: 10px; overflow: hidden; white-space: nowrap; }
+
+        /* === PHONETIC OUTPUT === */
+        .phonetic-output { background: #000; border: 1px solid var(--primary); padding: 20px; font-family: var(--font-mono); color: var(--accent); font-size: 1.5rem; min-height: 100px; border-radius: 6px; margin-top: 20px; line-height: 1.5; text-transform: uppercase; }
+
+        /* === CSS AJAIB UNTUK PRINT 1 HALAMAN (FIXED) === */
+        @media print {
+            @page { 
+                size: auto; 
+                margin: 0mm; 
+            }
+            
+            html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0 !important;
+                padding: 0 !important;
+                background: white !important;
+                overflow: visible !important;
+            }
+
+            /* HIDE STANDARD UI (Sidebar, Tombol, dll selalu hilang) */
+            .sidebar, .panel-head, .nav-label, .btn-action, .btn-reset, .copy-btn, .input-group, .widget-box {
+                display: none !important;
+            }
+
+            /* =========================================
+               SKENARIO 1: PRINT LABEL (Barang Bukti)
+               ========================================= */
+            body.mode-print-label main {
+                display: none !important; /* Matikan layout utama */
+            }
+
+            body.mode-print-label #print-overlay {
+                display: block !important;
+                position: fixed;
+                top: 20px;
+                left: 20px;
+                z-index: 9999;
+            }
+            
+            body.mode-print-label #print-overlay .label-preview {
+                display: block !important;
+                border: 2px solid #000 !important;
+                width: 100mm !important;
+                padding: 15px;
+            }
+
+            /* =========================================
+               SKENARIO 2: PRINT DOKUMEN (Surat)
+               ========================================= */
+            body.mode-print-doc main {
+                display: block !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
+            body.mode-print-doc .view {
+                display: none !important; /* Sembunyikan tab lain */
+            }
+
+            body.mode-print-doc #docs.view {
+                display: block !important; /* Hanya tampilkan tab Docs */
+            }
+
+            /* Sembunyikan panel input di kiri, sisakan kertas kanan */
+            body.mode-print-doc .grid-pdf {
+                display: block !important;
+                padding: 0 !important;
+            }
+            body.mode-print-doc .grid-pdf > .panel:first-child {
+                display: none !important; /* Hide Input Form */
+            }
+
+            /* Atur kertas agar pas A4 */
+            body.mode-print-doc .paper-viewport {
+                background: white !important;
+                padding: 0 !important;
+                border: none !important;
+                display: block !important;
+            }
+
+            body.mode-print-doc .paper-sheet {
+                position: relative !important;
+                box-shadow: none !important;
+                margin: 0 auto !important;
+                page-break-after: always;
+            }
+        }
+        
+        .hidden { display: none !important; }
+        .flex-row { display: flex; gap: 10px; }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="brand-icon"><i class="fas fa-user-lock"></i></div>
+            <div class="brand-text">
+                <h1>SAPD CENTRAL</h1>
+                <span>MDT SERVICE FOR ROLEPLAY ONLY</span>
+            </div>
+        </div>
+
+        <div class="nav-label">COMMAND SYSTEM</div>
+        <nav>
+            <button onclick="nav('calc')" class="active" id="btn-calc"><i class="fas fa-gavel"></i> Sentencing Grid</button>
+            <button onclick="nav('docs')" id="btn-docs"><i class="fas fa-file-contract"></i> Doc. Foundry</button>
+            <button onclick="nav('evidence')" id="btn-evidence"><i class="fas fa-fingerprint"></i> Evidence Mgr</button>
+        </nav>
+        
+        <div class="nav-label">FIELD OPS & TOOLS</div>
+        <nav>
+            <button onclick="nav('report')" id="btn-report"><i class="fas fa-clipboard-list"></i> Report Gen</button>
+            <button onclick="nav('cheatsheet')" id="btn-cheatsheet"><i class="fas fa-terminal"></i> Cmd Sheet</button>
+            <button onclick="nav('radio')" id="btn-radio"><i class="fas fa-walkie-talkie"></i> Radio Builder</button>
+            <button onclick="nav('sop')" id="btn-sop"><i class="fas fa-book-open"></i> Constitution</button>
+            <button onclick="nav('notes')" id="btn-notes"><i class="fas fa-sticky-note"></i> Officer Notes</button>
+        </nav>
+
+        <div class="nav-label">UTILITIES</div>
+        <nav>
+            <button onclick="nav('phonetic')" id="btn-phonetic"><i class="fas fa-bullhorn"></i> Phonetic Decoder</button>
+            <button onclick="nav('codex')" id="btn-codex"><i class="fas fa-book-journal-whills"></i> Codex Archive</button>
+        </nav>
+
+        <div class="widget-box">
+            <div class="widget-title">SHIFT DURATION</div>
+            <div id="patrolTimer">00:00:00</div>
+            <div class="widget-actions">
+                <button class="btn-mini" onclick="timerToggle()" id="tBtn"><i class="fas fa-play"></i></button>
+                <button class="btn-mini" onclick="timerReset()"><i class="fas fa-redo"></i></button>
+            </div>
+        </div>
+    </aside>
+
+    <main>
+        
+        <section id="calc" class="view active">
+            <div class="panel-head">
+                <h2><i class="fas fa-calculator"></i> SENTENCING GRID</h2>
+                <span class="badge">SYSTEM READY</span>
+            </div>
+            <div class="grid-split">
+                <div class="panel full-h">
+                    <div class="scroll-y">
+                        <div class="input-group">
+                            <label>SUSPECT IDENTITY</label>
+                            <input type="text" id="suspectInput" placeholder="Name or ID..." oninput="updateCalc()" autocomplete="off">
+                        </div>
+                        <div class="input-group">
+                            <label>SEARCH PENAL CODE</label>
+                            <input type="text" id="chargeSearch" placeholder="Type to filter..." oninput="renderGrid()">
+                        </div>
+                        <div class="charges-container" id="chargeGridContainer"></div>
+                    </div>
+                </div>
+                <div class="panel full-h no-scroll">
+                    <div class="nav-label" style="margin-top:0">VERDICT SUMMARY</div>
+                    <div class="summary-box">
+                        <div class="stat-flex">
+                            <div class="stat-unit"><small>JAIL</small><strong id="outJail" class="c-red">0</strong></div>
+                            <div class="stat-unit"><small>FINE</small><strong id="outFine" class="c-gold">0</strong></div>
+                        </div>
+                        <div class="cmd-output" onclick="copyCmd()">
+                            <span id="cmdText">/arrest [ID] 0 0</span>
+                            <i class="fas fa-copy"></i>
+                        </div>
+                    </div>
+                    <button class="btn-reset" onclick="resetCalc()">RESET FORM</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="report" class="view">
+            <div class="panel-head"><h2><i class="fas fa-clipboard-list"></i>REPORT GENERATOR </h2><span class="badge">REPORT</span></div>
+            <div class="panel full-h scroll-y" style="max-width:800px; margin:0 auto; width:100%;">
+                <div class="grid-form" style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; border:none;">
+                    <div class="input-group"><label>OFFICER NAME</label><input type="text" id="rptOfficer" placeholder="Rank Name"></div>
+                    <div class="input-group"><label>SUSPECT/SUBJECT</label><input type="text" id="rptSuspect" placeholder="Name"></div>
+                </div>
+                <div class="input-group"><label>CHARGES / VIOLATIONS</label><input type="text" id="rptCharges" placeholder="Pasal..."></div>
+                <div class="input-group"><label>CHRONOLOGY / DESCRIPTION</label><textarea id="rptChronology" rows="5" placeholder="Story..."></textarea></div>
+                <div class="flex-row">
+                    <button class="btn-action" onclick="genReport('arrest')">ARREST FORMAT</button>
+                    <button class="btn-secondary" onclick="genReport('incident')">INCIDENT FORMAT</button>
+                </div>
+                <div class="input-group" style="margin-top:20px;">
+                    <label>OUTPUT (READY TO COPY)</label>
+                    <textarea id="rptOutput" rows="8" readonly style="color:var(--success); font-family:var(--font-mono);"></textarea>
+                    <button class="copy-btn" onclick="copyToClip('rptOutput')">COPY TEXT</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="cheatsheet" class="view">
+            <div class="panel-head"><h2><i class="fas fa-terminal"></i> COMMAND SHEET</h2><span class="badge">COMMAND</span></div>
+            <div class="panel full-h scroll-y">
+                <div class="filter-pills">
+                    <button class="pill active" onclick="filterCmd('all')">ALL</button>
+                    <button class="pill" onclick="filterCmd('patrol')">PATROL</button>
+                    <button class="pill" onclick="filterCmd('arrest')">ARREST</button>
+                    <button class="pill" onclick="filterCmd('traffic')">TRAFFIC</button>
+                </div>
+                <div id="cmdGrid" class="cmd-grid"></div>
+            </div>
+        </section>
+
+        <section id="radio" class="view">
+            <div class="panel-head"><h2><i class="fas fa-walkie-talkie"></i> RADIO PHRASE BUILDER</h2></div>
+            <div class="panel full-h scroll-y" style="max-width:600px; margin:0 auto; width:100%;">
+                <div class="input-group">
+                    <label>SITUATION TYPE</label>
+                    <select id="radType">
+                        <option value="traffic">Traffic Stop (10-55)</option>
+                        <option value="pursuit">Pursuit (10-80)</option>
+                        <option value="backup">Request Backup</option>
+                        <option value="status">Status Update</option>
+                    </select>
+                </div>
+                <div class="input-group"><label>LOCATION (10-20)</label><input type="text" id="radLoc" placeholder="Street Name..."></div>
+                <div class="input-group"><label>DETAILS / VEHICLE</label><input type="text" id="radDesc" placeholder="e.g. Red Infernus..."></div>
+                <button class="btn-action" onclick="buildRadio()">GENERATE PHRASE</button>
+                
+                <div class="phonetic-output" id="radOutput" style="font-size:1.1rem; margin-top:20px;">...</div>
+                <button class="copy-btn" onclick="copyText(document.getElementById('radOutput').innerText)">COPY RADIO</button>
+            </div>
+        </section>
+
+        <section id="sop" class="view">
+            <div class="panel-head"><h2><i class="fas fa-book-open"></i> Constitution </h2></div>
+            <div class="panel full-h scroll-y">
+                <div class="input-group"><input type="text" id="sopSearch" placeholder="Search Law/Pasal..." oninput="renderSOP()"></div>
+                <div id="sopList" class="sop-list"></div>
+            </div>
+        </section>
+
+        <section id="notes" class="view">
+            <div class="panel-head"><h2><i class="fas fa-sticky-note"></i> OFFICER NOTEPAD</h2><span class="badge">LOCAL ONLY</span></div>
+            <div class="panel full-h scroll-y">
+                <div class="input-group" style="height:100%; display:flex; flex-direction:column;">
+                    <textarea id="myNotes" style="flex:1; font-family:var(--font-mono); line-height:1.5;" placeholder="Type your patrol notes here..."></textarea>
+                </div>
+                <button class="btn-secondary" onclick="downloadNotes()"><i class="fas fa-save"></i> EXPORT TO .TXT</button>
+            </div>
+        </section>
+
+        <section id="docs" class="view">
+            <div class="panel-head">
+                <h2><i class="fas fa-print"></i> DOCUMENT FOUNDRY</h2>
+                <span class="badge"> PDF</span>
+            </div>
+
+            <div class="grid-pdf">
+                <div class="panel full-h scroll-y">
+                    <div class="input-group">
+                        <label>TEMPLATE</label>
+                        <select id="docType" onchange="changeTemplate()">
+                            <option value="casefile">Casefile (Investigation)</option>
+                            <option value="surveillance">Surveillance Report</option>
+                            <option value="warrant">Arrest Warrant</option>
+                            <option value="search">Search Warrant</option>
+                            <option value="citation">Traffic Citation</option>
+                            <option value="incident">Incident Report</option>
+                            <option value="useofforce">Use of Force Report</option>
+                            <option value="bolo">BOLO (Wanted Poster)</option>
+                            <option value="witness">Witness Statement</option>
+                            <option value="forensic">Forensic Lab Report</option>
+                            <option value="blank">Blank Official (Custom Title)</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group hidden" id="customTitleGroup">
+                        <label style="color:var(--accent)">CUSTOM DOCUMENT TITLE</label>
+                        <input type="text" id="customTitle" placeholder="e.g. AUTOPSY REPORT" oninput="updateDoc()">
+                    </div>
+
+                    <div class="flex-row">
+                        <div class="input-group" style="flex:1"><label>CASE #</label><input type="text" id="docRef" value="SAPD-2025-001" oninput="updateDoc()"></div>
+                        <div class="input-group" style="flex:1"><label>DATE</label><input type="text" id="docDate" placeholder="DD/MM/YYYY" data-mask="date" oninput="updateDoc()"></div>
+                    </div>
+
+                    <div class="input-group"><label>OFFICER NAME</label><input type="text" id="docOfficer" placeholder="Rank Name" oninput="updateDoc()"></div>
+                    
+                    <div class="input-group"><label>DEPARTMENT / UNIT</label><input type="text" id="docDept" placeholder="e.g. DETECTIVE BUREAU" oninput="updateDoc()"></div>
+
+                    <div class="input-group"><label>TARGET</label><input type="text" id="docTarget" placeholder="Name..." oninput="updateDoc()"></div>
+                    <div class="input-group"><label>LOC/VEHICLE</label><input type="text" id="docLoc" placeholder="Details..." oninput="updateDoc()"></div>
+
+                    <div class="input-group"><label>NARRATIVE</label><textarea id="docBody" rows="12" oninput="updateDoc()"></textarea></div>
+
+                    <button class="copy-btn" onclick="printDoc()"><i class="fas fa-file-pdf"></i> PRINT / SAVE PDF</button>
+                </div>
+
+                <div class="paper-viewport">
+                    <div class="paper-sheet">
+                        <div class="watermark">CLASSIFIED</div>
+                        <div class="doc-header">
+                            <img src="SAPD.jpg" alt="Logo">
+                            <div class="header-text">
+                                <h1>SAN ANDREAS POLICE DEPARTMENT</h1>
+                                <h2>-------------------------------</h2>
+                                <h2>FILE DOCUMENTATION</h2>
+                                <h2>Warning: FOR ROLEPLAY PURPOSES ONLY</h2>
+                                <h2>-------------------------------</h2>
+                                <H8>SA Police HQ Pershing Square,San Andreas</H8>
+                            
+                            </div>
+                        </div>
+
+                        <div class="doc-title-bar" id="docTitleDisplay">OFFICIAL DOCUMENT</div>
+
+                        <div class="grid-form">
+                            <div class="grid-cell"><span class="cell-label">CASE ID</span><span class="cell-value" id="viewRef">...</span></div>
+                            <div class="grid-cell"><span class="cell-label">DATE</span><span class="cell-value" id="viewDate">...</span></div>
+                            <div class="grid-cell"><span class="cell-label">RANK-OFFICER</span><span class="cell-value" id="viewOfficer">...</span></div>
+                            <div class="grid-cell"><span class="cell-label">STATUS</span><span class="cell-value">ACTIVE</span></div>
+                        </div>
+
+                        <div class="grid-form" style="margin-top:-20px;">
+                            <div class="grid-cell"><span class="cell-label">TARGET/SUBJECT</span><span class="cell-value" id="viewTarget">...</span></div>
+                            <div class="grid-cell"><span class="cell-label">LOCATION/VEHICLE</span><span class="cell-value" id="viewLoc">...</span></div>
+                        </div>
+
+                        <div class="doc-content" id="viewBody"></div>
+
+                        <div class="doc-footer">
+                            <div class="sig-box">
+                                
+                                <p> VERIFIED SIGNATURE:</p>
+                                <p4>Pershing Square-SAPD HQ</p4>
+                                
+                                <div class="sig-line" id="viewSign">OFFICER</div>
+                                <div class="dept-line" id="viewDept">SAN ANDREAS POLICE DEPT</div>
+                            </div>
+                            <div>
+                                
+                                <div class="doc-barcode" style="font-size:1.5rem; margin-bottom:5px;">SAPD-doc</div>
+                                <div class="stamp-official">CLASSIFIED</div>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="evidence" class="view">
+            <div class="panel-head">
+                <h2><i class="fas fa-fingerprint"></i> EVIDENCE MANAGER</h2>
+                <span class="badge">LABEL MAKER</span>
+            </div>
+            
+            <div class="evidence-layout">
+                <div class="panel full-h scroll-y">
+                    <div class="input-group"><label>CASE ID</label><input type="text" id="evCase" placeholder="CS-25-XX"></div>
+                    <div class="input-group"><label>TYPE</label><select id="evType"><option>WEAPON</option><option>NARCOTICS</option><option>MONEY</option></select></div>
+                    <div class="input-group"><label>DESCRIPTION</label><input type="text" id="evDesc" placeholder="e.g. Pistol .50"></div>
+                    <div class="input-group"><label>SUSPECT</label><input type="text" id="evSus" placeholder="Name"></div>
+                    <div class="input-group"><label>LOCATION</label><input type="text" id="evLoc" placeholder="Found at..."></div>
+                    <button class="copy-btn" style="background:var(--success);" onclick="printLabel()"><i class="fas fa-print"></i> PRINT LABEL ONLY</button>
+                </div>
+
+                <div class="panel full-h no-scroll" style="justify-content:center; align-items:center; background:#111;">
+                    <div class="label-preview">
+                        <div class="ev-header">EVIDENCE / SEIZED PROPERTY</div>
+                        <div style="padding:10px; font-weight:bold; font-size:10pt;">
+                            <div style="display:flex; justify-content:space-between;">
+                                <span>CASE: <span id="pCase">...</span></span>
+                            </div>
+                            TYPE: <span id="pType">WEAPON</span><br>
+                            ITEM: <span id="pDesc">...</span><br>
+                            SUSPECT: <span id="pSus">...</span><br>
+                            <div style="border-top:1px solid #000; margin-top:5px; padding-top:5px; font-size:8pt;">CHAIN OF CUSTODY: SAPD</div>
+                        </div>
+                        <div class="ev-barcode">||| || ||| |||</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="phonetic" class="view">
+            <div class="panel-head"><h2><i class="fas fa-bullhorn"></i> PHONETIC DECODER</h2></div>
+            <div class="panel" style="max-width:800px; margin:0 auto; padding:30px; background:var(--bg-panel);">
+                <div class="input-group">
+                    <label>INPUT TEXT (PLATE / NAME)</label>
+                    <input type="text" id="phoneInput" placeholder="Type here..." oninput="translatePhonetic()" style="font-size:1.5rem; text-transform:uppercase;">
+                </div>
+                <div class="phonetic-output" id="phoneOutput">WAITING FOR INPUT...</div>
+            </div>
+        </section>
+
+        <section id="codex" class="view">
+            <div class="panel-head"><h2><i class="fas fa-book"></i> CODEX ARCHIVE</h2></div>
+            <div class="panel full-h scroll-y">
+                <div class="input-group"><input type="text" id="codexSearch" placeholder="Search codes..." oninput="renderCodex()"></div>
+                <div class="charges-container" id="codexList" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(200px, 1fr)); gap:10px;"></div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        /* === DATA === */
+        const charges = [
+            {code:'TV',name:'SECTION 1 - Traffic Violations',time:0,fine:0},
+  {code:'PV',name:'SECTION 2 - Permit Violations',time:0,fine:0},
+  {code:'DO',name:'SECTION 3 - Drug Offenses',time:0,fine:0},
+  {code:'WO',name:'SECTION 4 - Weapon Offenses',time:0,fine:0},
+  {code:'VC',name:'SECTION 5 - Violent Crimes',time:0,fine:0},
+  {code:'SO',name:'SECTION 6 - Sexual Offenses',time:0,fine:0},
+  {code:'PO',name:'SECTION 7 - Public Order Offenses',time:0,fine:0},
+  {code:'GO',name:'SECTION 8 - Government Offenses',time:0,fine:0},
+  {code:'PR',name:'SECTION 9 - Property Offenses',time:0,fine:0},
+  {code:'AM',name:'SECTION 10 - Acknowledgement & Amendments',time:0,fine:0},
+  {code:'FC',name:'SECTION 11 - Fraud, Corruption & Tax Evasion',time:0,fine:0},
+  {code:'OC',name:'SECTION 12 - Organized Crime & Gang Activity',time:0,fine:0},
+  {code:'TT',name:'SECTION 13 - Terrorism & Treason',time:0,fine:0},
+  {code:'IA',name:'SECTION 14 - Internal Affairs',time:0,fine:0},
+  {code:'PS',name:'SECTION 15 - Public Safety & Emergency Response',time:0,fine:0},
+  {code:'IB',name:'SECTION 16 - Immigration & Border',time:0,fine:0},
+  {code:'TV2',name:'SECTION 17 - Traffic & Vehicular Crimes',time:0,fine:0},
+  {code:'FC2',name:'SECTION 18 - Financial & Commercial Crimes',time:0,fine:0},
+  {code:'CM',name:'SECTION 19 - Crimes Against Minors',time:0,fine:0},
+  {code:'HM',name:'SECTION 20 - Health & Medical',time:0,fine:0},
+  {code:'PL',name:'SECTION 21 - Property & Land',time:0,fine:0},
+  {code:'CM2',name:'SECTION 22 - Communication & Media',time:0,fine:0},
+  {code:'MN',name:'SECTION 23 - Military & National Security',time:0,fine:0},
+  {code:'RC',name:'SECTION 24 - Religious & Cultural Protection',time:0,fine:0},
+  {code:'DR',name:'SECTION 25 - Detective Rules',time:0,fine:0},
+
+  // SECTION 1 - Traffic Violations
+  {code:'TV-001',name:'Unregistered Vehicles',time:0,fine:1000},
+  {code:'TV-002',name:'Illegal Modifications On Vehicles',time:0,fine:1000},
+  {code:'TV-003',name:'Speeding',time:0,fine:1000},
+  {code:'TV-004',name:'Maneuvering Vehicles with Suspended/Expired License',time:0,fine:1000},
+  {code:'TV-005',name:'Failed or Refused to Pay Fine Ticket',time:0,fine:1000},
+  {code:'TV-006A',name:'General Traffic Violation - Driving at Wrong Lane',time:0,fine:1000},
+  {code:'TV-006B',name:'General Traffic Violation - Illegal U-turn',time:0,fine:1000},
+  {code:'TV-006C',name:'General Traffic Violation - Blocking/Cutting Intersection',time:0,fine:1000},
+  {code:'TV-006D',name:'General Traffic Violation - Driving on Pedestrian Walk',time:0,fine:1000},
+  {code:'TV-006E',name:'General Traffic Violation - Excessive Use of Horn',time:0,fine:1000},
+  {code:'TV-006F',name:'General Traffic Violation - Driving Through Safety Zone',time:0,fine:1000},
+  {code:'TV-006G',name:'General Traffic Violation - Violating Safety Requirements (Helmet/Belt/Lights)',time:0,fine:1000},
+  {code:'TV-006H',name:'General Traffic Violation - Violating Safety on Heavy Vehicles',time:0,fine:1000},
+
+  // SECTION 2 - Permit Violations
+  {code:'PV-002A',name:'No Firearms Permit',time:15,fine:1000},
+  {code:'PV-002C',name:'No Trucking License',time:15,fine:1000},
+  {code:'PV-002D',name:'No Lumberjack Permit',time:15,fine:1000},
+
+  // SECTION 3 - Drug Offenses
+  {code:'DO-003A',name:'Possessing Marijuana (Small Amount)',time:10,fine:200},
+  {code:'DO-003B',name:'Possessing Marijuana (Large Amount)',time:10,fine:200},
+  {code:'DO-003C',name:'Possessing Cocaine/Crack (Small Amount)',time:10,fine:200},
+  {code:'DO-003D',name:'Possessing Cocaine/Crack (Large Amount)',time:10,fine:200},
+  {code:'DO-003F',name:'Selling or Distributing Illegal Drugs',time:10,fine:200},
+  {code:'DO-003G',name:'Drug Manufacturing',time:10,fine:200},
+  {code:'DO-003H',name:'Being Present for Illegal Drug Use',time:10,fine:200},
+
+  // SECTION 4 - Weapon Offenses
+  {code:'WO-004A',name:'Possessing Sharp/Blunt Weapons',time:15,fine:150},
+  {code:'WO-004B',name:'Possessing Illegal Firearms',time:15,fine:150},
+  {code:'WO-004C',name:'Possessing Legal Firearms Without License',time:15,fine:150},
+  {code:'WO-004D',name:'Possessing Weapon Materials/Schematics',time:15,fine:150},
+  {code:'WO-004E',name:'Misusing Firearms License',time:15,fine:150},
+  {code:'WO-004F',name:'Brandishing a Firearm/Weapon',time:15,fine:150},
+  {code:'WO-004G',name:'Unlawful Discharge of Firearm/Weapon',time:15,fine:150},
+  {code:'WO-004I',name:'Weapon Trafficking',time:15,fine:150},
+  {code:'WO-004J',name:'Possessing Destructive Devices/Explosives',time:15,fine:150},
+
+  // SECTION 5 - Violent Crimes
+  {code:'VC-005A',name:'Intimidation',time:10,fine:100},
+  {code:'VC-005B',name:'Assault',time:10,fine:100},
+  {code:'VC-005C',name:'Assault with Deadly Weapons',time:10,fine:100},
+  {code:'VC-005F',name:'Attempted Murder',time:10,fine:100},
+  {code:'VC-005G',name:'Murdering',time:70,fine:12000},
+  {code:'VC-005I',name:'Drive-By Shooting',time:10,fine:100},
+  {code:'VC-005H',name:'Group Criminal Assault',time:10,fine:100},
+  {code:'VC-005J',name:'Melee Robbery',time:10,fine:100},
+  {code:'VC-005K',name:'Armed Robbery',time:10,fine:100},
+  {code:'VC-005L',name:'Piracy',time:10,fine:100},
+  {code:'VC-005M',name:'Grand Theft',time:10,fine:100},
+  {code:'VC-005O',name:'Grand Theft of Firearms',time:10,fine:100},
+  {code:'VC-005Q',name:'Kidnapping',time:10,fine:100},
+  {code:'VC-005R',name:'Hostage Taking',time:10,fine:100},
+  {code:'VC-005U',name:'Human Trafficking',time:10,fine:100},
+
+  // SECTION 6 - Sexual Offenses
+  {code:'SO-006B',name:'Rape',time:15,fine:150},
+  {code:'SO-006D',name:'Prostitution',time:15,fine:150},
+  {code:'SO-006A',name:'Sexual Harassment',time:15,fine:150},
+  {code:'SO-006F',name:'Being Naked in Public',time:15,fine:150},
+  {code:'SO-006G',name:'Performing Sexual Action in Public',time:15,fine:150},
+
+  // SECTION 7 - Public Order Offenses
+  {code:'PO-007A',name:'Initiating a Riot',time:10,fine:250},
+  {code:'PO-007C',name:'Participating in a Riot',time:10,fine:250},
+  {code:'PO-007G',name:'Vilification',time:10,fine:250},
+  {code:'PO-007F',name:'Drunk in Public Space',time:10,fine:250},
+  {code:'PO-007J',name:'Disturbing Public Peace',time:10,fine:250},
+  {code:'PO-007K',name:'Brawl in Public Space',time:10,fine:250},
+  {code:'PO-007P',name:'Stalking',time:10,fine:250},
+
+  // SECTION 8 - Government Offenses
+  {code:'GO-008A',name:'Obstruction of Justice',time:30,fine:5000},
+  {code:'GO-008B',name:'Abusing Government Hotline',time:30,fine:5000},
+  {code:'GO-008E',name:'Attempting to Bribe Public Officials',time:30,fine:5000},
+  {code:'GO-008D',name:'Impersonating Government Staff',time:30,fine:5000},
+  {code:'GO-008J',name:'Assaulting LEO',time:30,fine:5000},
+  {code:'GO-008K',name:'Attempted Murdering a Public Official',time:30,fine:5000},
+  {code:'GO-008L',name:'Murdering a Public Official',time:75,fine:20000},
+
+  // SECTION 9 - Property Offenses
+  {code:'PR-009C',name:'Vandalism',time:15,fine:150},
+  {code:'PR-009F',name:'Using Property for Illegal Distribution',time:15,fine:150},
+  {code:'PR-009B',name:'Trespassing Government Property',time:15,fine:150},
+
+  // SECTION 10 - Acknowledgement & Amendments
+  {code:'AM-010A',name:'Failure to Comply with New Law Amendments',time:12,fine:300},
+  {code:'AM-010B',name:'Misuse of Legal Loopholes',time:18,fine:500},
+  {code:'AM-010C',name:'Tampering with Official Records',time:30,fine:10000},
+  {code:'AM-010D',name:'Falsification of Public Documents',time:48,fine:10500},
+  {code:'AM-010E',name:'Unauthorized Legal Representation',time:24,fine:8000},
+  {code:'AM-010F',name:'Misrepresentation of Law in Public',time:12,fine:5000},
+  {code:'AM-010G',name:'Failure to Report Legal Amendments',time:18,fine:6000},
+  {code:'AM-010H',name:'Distribution of Outdated/Forged Legal Documents',time:36,fine:10200},
+
+  // SECTION 11 - Fraud, Corruption & Tax Evasion
+  {code:'FC-011A',name:'Fraud',time:24,fine:1000},
+  {code:'FC-011B',name:'Money Laundering',time:48,fine:5000},
+  {code:'FC-011C',name:'Tax Evasion',time:36,fine:2000},
+  {code:'FC-011D',name:'Corruption (Public Official)',time:75,fine:4000},
+  {code:'FC-011E',name:'Embezzlement',time:60,fine:3000},
+  {code:'FC-011F',name:'Corporate Fraud',time:48,fine:15000},
+  {code:'FC-011G',name:'Securities Fraud / Insider Trading',time:72,fine:13500},
+  {code:'FC-011H',name:'Political Corruption & Power Abuse',time:90,fine:15000},
+
+  // SECTION 12 - Organized Crime & Gang Activity
+  {code:'OC-012A',name:'Racketeering',time:48,fine:7000},
+  {code:'OC-012B',name:'Gang Conspiracy',time:36,fine:7500},
+  {code:'OC-012C',name:'Arms Trafficking',time:60,fine:5500},
+  {code:'OC-012D',name:'Drug Cartel Operations',time:60,fine:5000},
+  {code:'OC-012E',name:'Illegal Gambling House',time:24,fine:5200},
+  {code:'OC-012F',name:'Extortion by Gang',time:48,fine:5000},
+  {code:'OC-012G',name:'Gang Warfare in Public',time:30,fine:8000},
+  {code:'OC-012H',name:'Organized Assassination Contract',time:60,fine:5000},
+
+  // SECTION 13 - Terrorism & Treason
+  {code:'TT-013A',name:'Terrorist Attack',time:90,fine:15000},
+  {code:'TT-013B',name:'Treason Against the State',time:90,fine:17500},
+  {code:'TT-013C',name:'Sabotage of Infrastructure',time:60,fine:13000},
+  {code:'TT-013D',name:'Financing Terrorism',time:75,fine:14000},
+  {code:'TT-013E',name:'Recruitment for Terror Group',time:48,fine:12500},
+  {code:'TT-013F',name:'Harboring Terrorists',time:60,fine:13000},
+  {code:'TT-013G',name:'Propaganda for Terrorism',time:48,fine:12000},
+  {code:'TT-013H',name:'Illegal Possession of Explosives',time:90,fine:15000},
+
+  // SECTION 14 - Internal Affairs
+  {code:'IA-027A',name:'Officer Abuse of Power (Illegal Stop & Search)',time:24,fine:2000},
+  {code:'IA-027B',name:'Accepting Bribes While on Duty',time:75,fine:5000},
+  {code:'IA-027C',name:'Excessive Use of Force Against Civilians',time:60,fine:3500},
+  {code:'IA-027D',name:'Failure to Report Criminal Activity by Officers',time:36,fine:2500},
+  {code:'IA-027E',name:'Collusion with Criminal Organizations',time:90,fine:7000},
+  {code:'IA-027F',name:'Tampering with Bodycam/Dashcam Footage',time:72,fine:4500},
+  {code:'IA-027G',name:'Illegal Use of SAPD Equipment',time:48,fine:3000},
+  {code:'IA-027H',name:'Officer Caught Lying in Investigation',time:60,fine:4000},
+  {code:'IA-027I',name:'SAPD Officer Leaking Classified Data',time:75,fine:5500},
+  {code:'IA-027J',name:'Officer Harassment or Discrimination',time:24,fine:2000},
+  {code:'IA-027K',name:'Officer Involved in Illegal Gambling/Drug Use',time:60,fine:3500},
+  {code:'IA-027L',name:'Failure to Follow Internal Affairs Summons',time:18,fine:1500},
+  {code:'IA-027M',name:'Destruction or Tampering of Evidence',time:90,fine:6000},
+  {code:'IA-027N',name:'Obstructing an Internal Affairs Investigation',time:48,fine:3000},
+  {code:'IA-027O',name:'Use of Unauthorized Deadly Force in Pursuit',time:72,fine:5000},
+  {code:'IA-027P',name:'Officer Involvement in Corruption Rings',time:90,fine:7500},
+  {code:'IA-027Q',name:'Failure to Report Excessive Force by Officers',time:30,fine:2500},
+  {code:'IA-027R',name:'Officer Misuse of Warrant Authority',time:60,fine:4500},
+
+  // SECTION 15 - Public Safety & Emergency Response
+  {code:'PS-015A',name:'False Emergency Call',time:12,fine:500},
+  {code:'PS-015B',name:'Obstructing Emergency Services',time:18,fine:800},
+  {code:'PS-015C',name:'Impersonating Police or Medic',time:24,fine:1200},
+  {code:'PS-015D',name:'Tampering with Safety Equipment',time:36,fine:1500},
+  {code:'PS-015E',name:'Sabotaging 911 Network',time:60,fine:3000},
+  {code:'PS-015F',name:'Blocking Fire Truck/Ambulance',time:24,fine:1000},
+  {code:'PS-015G',name:'False Report of Bomb/Terror Threat',time:48,fine:2500},
+  {code:'PS-015H',name:'Emergency Response Fraud',time:36,fine:2000},
+
+  // SECTION 16 - Immigration & Border
+  {code:'IB-016A',name:'Illegal Immigration',time:12,fine:800},
+  {code:'IB-016B',name:'Human Smuggling',time:60,fine:2500},
+  {code:'IB-016C',name:'Forged Immigration Papers',time:24,fine:1200},
+  {code:'IB-016D',name:'Harboring Illegal Immigrants',time:18,fine:1000},
+  {code:'IB-016E',name:'Border Contraband Smuggling',time:48,fine:2000},
+
+  // SECTION 17 - Traffic & Vehicular Crimes
+  {code:'TV-017A',name:'Reckless Driving',time:12,fine:500},
+  {code:'TV-017B',name:'Street Racing',time:24,fine:1000},
+  {code:'TV-017C',name:'Driving Without License',time:18,fine:600},
+  {code:'TV-017D',name:'Driving Under Influence (DUI)',time:36,fine:1200},
+  {code:'TV-017E',name:'Hit and Run',time:48,fine:2000},
+  {code:'TV-017F',name:'Illegal Vehicle Modification',time:24,fine:800},
+  {code:'TV-017G',name:'Vehicle Theft',time:60,fine:2500},
+  {code:'TV-017H',name:'Using Vehicle for Criminal Act',time:72,fine:3000},
+
+  // SECTION 18 - Financial & Commercial Crimes
+  {code:'FC-018A',name:'Illegal Banking',time:36,fine:2000},
+  {code:'FC-018B',name:'Counterfeit Currency',time:60,fine:3000},
+  {code:'FC-018C',name:'Credit Card Fraud',time:30,fine:1200},
+  {code:'FC-018D',name:'Illegal Loan Sharking',time:36,fine:1500},
+  {code:'FC-018E',name:'Insurance Fraud',time:48,fine:1800},
+  {code:'FC-018F',name:'Unregistered Business Operations',time:24,fine:1000},
+  {code:'FC-018G',name:'Market Price Fixing / Cartel',time:60,fine:2500},
+  {code:'FC-018H',name:'Illegal Foreign Exchange',time:48,fine:2000},
+
+  // SECTION 19 - Crimes Against Minors
+  {code:'CM-019A',name:'Child Abuse',time:72,fine:3000},
+  {code:'CM-019B',name:'Child Trafficking',time:90,fine:5000},
+  {code:'CM-019C',name:'Child Neglect',time:36,fine:1500},
+  {code:'CM-019D',name:'Using Minors for Criminal Activity',time:60,fine:2500},
+  {code:'CM-019E',name:'Minor Endangerment',time:30,fine:1200},
+  {code:'CM-019F',name:'Child Pornography Possession',time:90,fine:4000},
+  {code:'CM-019G',name:'Online Exploitation of Minors',time:72,fine:3500},
+  {code:'CM-019H',name:'Sale of Alcohol/Drugs to Minors',time:48,fine:2000},
+
+  // SECTION 20 - Health & Medical
+  {code:'HM-020A',name:'Illegal Medical Practice',time:48,fine:2000},
+  {code:'HM-020B',name:'Selling Unlicensed Medication',time:36,fine:1200},
+  {code:'HM-020C',name:'Medical Insurance Fraud',time:60,fine:2500},
+  {code:'HM-020D',name:'Organ Trafficking',time:90,fine:5000},
+  {code:'HM-020E',name:'Unauthorized Clinic Operation',time:36,fine:1500},
+  {code:'HM-020F',name:'Neglect by Medical Staff',time:48,fine:2000},
+  {code:'HM-020G',name:'Tampering with Medical Records',time:30,fine:1000},
+  {code:'HM-020H',name:'Selling Expired Drugs',time:18,fine:800},
+
+  // SECTION 21 - Property & Land
+  {code:'PL-021A',name:'Illegal Land Occupation',time:36,fine:1500},
+  {code:'PL-021B',name:'Land Fraud (Fake Ownership)',time:60,fine:2500},
+  {code:'PL-021C',name:'Illegal Real Estate Transaction',time:48,fine:2000},
+  {code:'PL-021D',name:'Trespassing Private Property',time:12,fine:600},
+  {code:'PL-021E',name:'Destruction of Private Property',time:30,fine:1200},
+  {code:'PL-021F',name:'Illegal Construction',time:24,fine:1000},
+  {code:'PL-021G',name:'Illegal Land Mining or Extraction',time:60,fine:2500},
+  {code:'PL-021H',name:'Property Extortion',time:72,fine:3000},
+
+  // SECTION 22 - Communication & Media
+  {code:'CM-022A',name:'Illegal Radio Broadcasting',time:18,fine:800},
+  {code:'CM-022B',name:'Spreading False Information',time:36,fine:1500},
+  {code:'CM-022C',name:'Hate Speech Through Media',time:48,fine:2000},
+  {code:'CM-022D',name:'Unauthorized Wiretapping',time:60,fine:2500},
+  {code:'CM-022E',name:'Propaganda to Incite Violence',time:72,fine:3500},
+  {code:'CM-022F',name:'Media Blackmail',time:48,fine:2000},
+  {code:'CM-022G',name:'Broadcasting Classified Info',time:90,fine:4000},
+  {code:'CM-022H',name:'Defamation Through Media',time:36,fine:1500},
+
+  // SECTION 23 - Military & National Security
+  {code:'MN-023A',name:'Desertion from Military Duty',time:60,fine:2500},
+  {code:'MN-023B',name:'Unauthorized Use of Military Equipment',time:72,fine:3500},
+  {code:'MN-023C',name:'Illegal Sale of Military Secrets',time:90,fine:5000},
+  {code:'MN-023D',name:'Unauthorized Paramilitary Group',time:48,fine:2000},
+  {code:'MN-023E',name:'Illegal Weapon Testing',time:60,fine:3000},
+  {code:'MN-023F',name:'Civilian Access to Restricted Zones',time:18,fine:800},
+  {code:'MN-023G',name:'Sabotage of Military Facilities',time:90,fine:4000},
+  {code:'MN-023H',name:'Unauthorized Military Uniform Use',time:24,fine:1200},
+
+  // SECTION 24 - Religious & Cultural Protection
+  {code:'RC-024A',name:'Desecration of Religious Site',time:60,fine:2500},
+  {code:'RC-024B',name:'Illegal Religious Extortion',time:36,fine:1500},
+  {code:'RC-024C',name:'Religious Hate Speech',time:48,fine:2000},
+  {code:'RC-024D',name:'Illegal Cult Formation',time:72,fine:3000},
+  {code:'RC-024E',name:'Use of Religion to Justify Crime',time:60,fine:2500},
+  {code:'RC-024F',name:'Theft from Religious Institutions',time:36,fine:1800},
+  {code:'RC-024G',name:'Illegal Artifact Trafficking',time:72,fine:3000},
+  {code:'RC-024H',name:'Religious Fraud',time:24,fine:1200},
+
+  // SECTION 25 - Detective Rules
+  {code:'DR-026A',name:'Detective Failure to Maintain Confidentiality',time:12,fine:500},
+  {code:'DR-026B',name:'Detective Accepting Bribes',time:24,fine:1000},
+  {code:'DR-026C',name:'Detective Failure to Provide Evidence',time:18,fine:800},
+  {code:'DR-026D',name:'Detective Abuse of Authority',time:30,fine:1200},
+  {code:'DR-026E',name:'Detective Failure to Follow Surveillance Protocol',time:12,fine:700},
+  {code:'DR-026F',name:'Detective Leaking Investigation Data',time:36,fine:1500},
+  {code:'DR-026G',name:'Detective Failure to Cooperate with SAPD',time:12,fine:600},
+  {code:'DR-026H',name:'Detective Using Illegal Equipment',time:24,fine:1200},
+  {code:'DR-026I',name:'Detective Tampering with Evidence',time:48,fine:2000},
+  {code:'DR-026J',name:'Detective Failure to Respect Suspect Rights',time:12,fine:700},
+  {code:'DR-026K',name:'Detective Misleading Court Testimony',time:24,fine:1000},
+  {code:'DR-026L',name:'Detective Failure to Protect Informants',time:18,fine:800},
+  {code:'DR-026M',name:'Detective Sharing Classified Info to Public',time:36,fine:1500},
+  {code:'DR-026N',name:'Detective Failure to Follow Command Structure',time:12,fine:600},
+  {code:'DR-026O',name:'Detective Fabricating Case Files',time:48,fine:2000},
+  {code:'DR-026P',name:'Detective Failure to Maintain Professionalism',time:12,fine:500},
+  {code:'DR-026Q',name:'Detective Interfering with Court Decisions',time:24,fine:1200},
+  {code:'DR-026R',name:'Detective Failure to Report Evidence to HQ',time:18,fine:800},
+  {code:'DR-026S',name:'Detective Cooperating with Criminals',time:60,fine:2500},
+  {code:'DR-026T',name:'Detective Failure to Respect Chain of Custody',time:24,fine:1000},
+  {code:'DR-026U',name:'Detective Destroying Evidence Intentionally',time:75,fine:3000}
+];
+        
+        // TEMPLATES RESTORED TO ORIGINAL (V5)
+        const templates = {
+            incident: { 
+                title: "INCIDENT REPORT", 
+                body: "NATURE OF INCIDENT:\n[e.g. Public Disturbance / Assault]\n\nNARRATIVE:\nOn the date and time aforementioned, the undersigned officer responded to a call regarding...\n\n[Describe the situation, actions taken, and resolution here]\n\nWITNESSES:\n1. Name (Contact)\n2. Name (Contact)" 
+            },
+            citation: { 
+                title: "TRAFFIC VIOLATION CITATION", 
+                body: "VEHICLE INFORMATION:\nModel: \nColor: \nPlate: \n\nVIOLATION(S) OBSERVED:\n1. [Charge Code] - Description\n2. [Charge Code] - Description\n\nOFFICER NOTES:\nSubject was compliant/non-compliant. Dashcam footage available.\n\nPENALTY NOTICE:\nFailure to pay this citation within the allotted time will result in a bench warrant for your arrest." 
+            },
+            impound: { 
+                title: "VEHICLE IMPOUND REPORT", 
+                body: "VEHICLE DETAILS:\nModel: \nPlate: \nOwner: \n\nREASON FOR IMPOUND:\n[ ] Illegal Parking\n[ ] Evidence in Crime\n[ ] Driver Arrested\n[ ] Unregistered/Uninsured\n\nVEHICLE INVENTORY:\n(List valuable items found inside before towing)\n- \n- \n\nDAMAGE REPORT:\n[Describe existing scratches/dents]" 
+            },
+            bolo: {
+                title: "ALL-POINTS BULLETIN (BOLO)",
+                body: "PRIORITY: [LOW / HIGH / CRITICAL]\n\nSUBJECT DESCRIPTION:\nName (if known): \nRace/Sex: \nClothing: \nDistinctive Features: \n\nVEHICLE DESCRIPTION:\nModel: \nColor: \nPlate: \n\nLAST SEEN:\n[Location and Direction of Travel]\n\nWARNING:\nSubject is considered ARMED and DANGEROUS. Do not approach alone."
+            },
+
+            // === INVESTIGATION & DETECTIVE ===
+            casefile: { 
+                title: "CRIMINAL INVESTIGATION FILE", 
+                body: "CASE STATUS: [OPEN / CLOSED / COLD]\n\nINCIDENT SUMMARY:\n[Brief overview of the crime]\n\nPERSONS OF INTEREST / SUSPECTS:\n1. Name (Status: At Large/In Custody)\n2. Name (Status)\n\nEVIDENCE LOG:\n[#1] Description - Found at...\n[#2] Description - Found at...\n\nINVESTIGATION NOTES:\n- [Date]: Surveillance established.\n- [Date]: Suspect spotted at...\n\nCONCLUSION / RECOMMENDATION:\nBased on the evidence collected, it is recommended that..." 
+            },
+            witness: {
+                title: "WITNESS STATEMENT",
+                body: "WITNESS INFORMATION:\nName: \nDOB: \nContact: \n\nSTATEMENT:\nI, the undersigned, hereby declare that the following statement is true to the best of my knowledge:\n\n[Type exact quote of witness testimony here]\n\n\nOATH:\nI understand that making a false statement to a peace officer is a crime punishable by law."
+            },
+            surveillance: { 
+                title: "SURVEILLANCE LOG", 
+                body: "TARGET IDENTITY:\nName/Group: \n\nLOCATION OF OPERATION:\n[Address / Coordinates]\n\nTIME LOG:\n[00:00] Unit established position. Visual confirmed.\n[00:15] Target exited premises carrying...\n[00:30] Target entered vehicle (Plate: ...)\n\nPHOTOGRAPHIC EVIDENCE:\n(Attach links or references to photos here)\n\nOPERATIONAL NOTES:" 
+            },
+            forensic: {
+                title: "FORENSIC LAB REPORT",
+                body: "EVIDENCE SUBMITTED:\n[Item ID] Description\n\nREQUESTED ANALYSIS:\n[ ] Fingerprint Matching\n[ ] DNA Profiling\n[ ] Ballistics Match\n[ ] Drug Chemical Analysis\n\nLAB RESULTS:\nAnalysis of Item [#...] indicates a 99.9% match with [Subject Name].\n\nBALLISTICS:\nProjectiles recovered match a [Weapon Model], Serial Number [If known].\n\nCERTIFICATION:\nThis analysis was conducted by a certified forensic technician."
+            },
+
+            // === LEGAL & WARRANTS ===
+            warrant: { 
+                title: "ARREST WARRANT AFFIDAVIT", 
+                body: "AFFIDAVIT IN SUPPORT OF ARREST WARRANT:\n\nI, Officer [Name], state under oath that I have probable cause to believe that [Suspect Name] has committed the crime(s) of:\n\nCHARGES:\n1. \n2. \n\nFACTS ESTABLISHING PROBABLE CAUSE:\n[Detail the evidence that links the suspect to the crime]\n\nREQUEST:\nThe state requests a warrant be issued for the immediate arrest of the defendant." 
+            },
+            search: { 
+                title: "SEARCH & SEIZURE WARRANT", 
+                body: "LOCATION TO BE SEARCHED:\n[Full Address / Vehicle Description]\n\nOWNER OF PROPERTY:\n[Name]\n\nITEMS TO BE SEIZED:\n[ ] Illegal Narcotics and Paraphernalia\n[ ] Firearms and Ammunition\n[ ] Stolen Property\n[ ] Electronic Devices containing evidence\n\nJUSTIFICATION:\n[Briefly explain why evidence is believed to be at this location]" 
+            },
+            useofforce: {
+                title: "USE OF FORCE REPORT",
+                body: "SUBJECT INFO:\nName: \nInjuries: [None / Minor / Critical / Fatal]\n\nFORCE USED:\n[ ] Physical / Takedown\n[ ] Taser / Non-Lethal\n[ ] Lethal Firearm\n\nJUSTIFICATION:\nThe force was used in response to:\n[ ] Active Resistance\n[ ] Flight\n[ ] Threat to Officer Safety\n[ ] Threat to Public Safety\n\nNARRATIVE OF ENGAGEMENT:\n[Describe the escalation of events leading to force usage]"
+            },
+
+            // === ADMINISTRATION ===
+            blank: { 
+                title: "OFFICIAL DOCUMENT", 
+                body: "[ OFFICIAL HEADER ]\n\nTO:\nFROM:\nDATE:\nSUBJECT:\n\nBODY:\n\n\n\n[ SIGNATURE ]" 
+            }
+        };
+        
+        const nato = {A:'Alpha', B:'Bravo', C:'Charlie', D:'Delta', E:'Echo', F:'Foxtrot', G:'Golf', H:'Hotel', I:'India', J:'Juliet', K:'Kilo', L:'Lima', M:'Mike', N:'November', O:'Oscar', P:'Papa', Q:'Quebec', R:'Romeo', S:'Sierra', T:'Tango', U:'Uniform', V:'Victor', W:'Whiskey', X:'Xray', Y:'Yankee', Z:'Zulu', '0':'Zero', '1':'One', '2':'Two', '3':'Three', '4':'Four', '5':'Five', '6':'Six', '7':'Seven', '8':'Eight', '9':'Nine'};
+        const codes = [{ c: '10-0', d: 'Hati-hati / gunakan kewaspadaan' },
+  { c: '10-1', d: 'Sinyal radio buruk' },
+  { c: '10-2', d: 'Sinyal radio baik' },
+  { c: '10-3', d: 'Hentikan transmisi' },
+  { c: '10-4', d: 'Dimengerti / diterima' },
+  { c: '10-5', d: 'Teruskan pesan' },
+  { c: '10-6', d: 'Sedang sibuk / dalam penugasan' },
+  { c: '10-7', d: 'Tidak bertugas' },
+  { c: '10-8', d: 'Aktif / sedang bertugas' },
+  { c: '10-9', d: 'Ulangi pesan terakhir' },
+  { c: '10-10', d: 'Perkelahian sedang berlangsung' },
+  { c: '10-11', d: 'Pemberhentian kendaraan' },
+  { c: '10-12', d: 'Siaga / tunggu' },
+  { c: '10-13', d: 'Petugas jatuh / membutuhkan bantuan' },
+  { c: '10-14', d: 'Orang atau kendaraan mencurigakan' },
+  { c: '10-15', d: 'Tahanan telah diamankan' },
+  { c: '10-16', d: 'Keributan dalam rumah tangga' },
+  { c: '10-17', d: 'Meminta ambulans' },
+  { c: '10-18', d: 'Segera / prioritas' },
+  { c: '10-19', d: 'Kembali ke kantor' },
+  { c: '10-20', d: 'Lokasi' },
+  { c: '10-21', d: 'Hubungi melalui telepon' },
+  { c: '10-22', d: 'Abaikan pesan terakhir' },
+  { c: '10-23', d: 'Telah tiba di tempat kejadian' },
+  { c: '10-24', d: 'Penugasan selesai' },
+  { c: '10-25', d: 'Temui atau hubungi unit lain' },
+  { c: '10-26', d: 'Perkiraan waktu tiba' },
+  { c: '10-27', d: 'Pemeriksaan SIM' },
+  { c: '10-28', d: 'Pemeriksaan STNK kendaraan' },
+  { c: '10-29', d: 'Pemeriksaan catatan kriminal / DPO' },
+  { c: '10-30', d: 'Hentikan penggunaan radio yang tidak perlu' },
+  { c: '10-31', d: 'Tindak pidana sedang berlangsung' },
+  { c: '10-32', d: 'Orang membawa senjata' },
+  { c: '10-33', d: 'Kondisi darurat, radio prioritas' },
+  { c: '10-34', d: 'Kerusuhan' },
+  { c: '10-35', d: 'Peringatan kejahatan besar' },
+  { c: '10-36', d: 'Konfirmasi waktu' },
+  { c: '10-37', d: 'Penyelidikan kendaraan mencurigakan' },
+  { c: '10-38', d: 'Sedang memberhentikan kendaraan' },
+  { c: '10-39', d: 'Penggunaan sirine darurat' },
+  { c: '10-40', d: 'Pergerakan senyap tanpa sirine' },
+  { c: '10-41', d: 'Mulai dinas' },
+  { c: '10-42', d: 'Akhiri dinas' },
+  { c: '10-43', d: 'Informasi saja' },
+  { c: '10-44', d: 'Orang meninggal dunia' },
+  { c: '10-45', d: 'Kondisi korban' },
+  { c: '10-46', d: 'Membantu pengendara' },
+  { c: '10-47', d: 'Perbaikan jalan darurat' },
+  { c: '10-48', d: 'Pengaturan lalu lintas' },
+  { c: '10-49', d: 'Kasus pembunuhan' },
+  { c: '10-50', d: 'Kecelakaan lalu lintas' },
+  { c: '10-51', d: 'Membutuhkan kendaraan derek' },
+  { c: '10-52', d: 'Membutuhkan bantuan medis' },
+  { c: '10-53', d: 'Jalan ditutup' },
+  { c: '10-54', d: 'Hewan berada di jalan' },
+  { c: '10-55', d: 'Pengemudi dalam pengaruh alkohol' },
+  { c: '10-56', d: 'Pejalan kaki mabuk' },
+  { c: '10-57', d: 'Tabrak lari' },
+  { c: '10-58', d: 'Mengatur lalu lintas' },
+  { c: '10-59', d: 'Tugas pengawalan' },
+  { c: '10-60', d: 'Unit berada di area' },
+  { c: '10-61', d: 'Personel berada di area' },
+  { c: '10-62', d: 'Balas pesan' },
+  { c: '10-63', d: 'Bersiap menerima pesan' },
+  { c: '10-64', d: 'Pesan telah disampaikan' },
+  { c: '10-65', d: 'Penugasan melalui radio' },
+  { c: '10-66', d: 'Orang mencurigakan' },
+  { c: '10-67', d: 'Orang hilang' },
+  { c: '10-68', d: 'Perampokan bersenjata' },
+  { c: '10-69', d: 'Sampaikan nomor telepon' },
+  { c: '10-70', d: 'Pengejaran dengan berjalan kaki' },
+  { c: '10-71', d: 'Penembakan' },
+  { c: '10-72', d: 'Pelarian tahanan' },
+  { c: '10-73', d: 'Subjek dengan gangguan kejiwaan' },
+  { c: '10-74', d: 'Perusakan fasilitas' },
+  { c: '10-75', d: 'Kecelakaan berat' },
+  { c: '10-76', d: 'Dalam perjalanan menuju lokasi' },
+  { c: '10-77', d: 'Perkiraan waktu tiba tidak diketahui' },
+  { c: '10-78', d: 'Membutuhkan bantuan tambahan' },
+  { c: '10-79', d: 'Ancaman bom' },
+  { c: '10-80', d: 'Pengejaran kendaraan' },
+  { c: '10-81', d: 'Permintaan tes alkohol' },
+  { c: '10-82', d: 'Persiapan tempat penginapan' },
+  { c: '10-83', d: 'Pengamanan area sekolah' },
+  { c: '10-84', d: 'Informasikan perkiraan waktu tiba' },
+  { c: '10-85', d: 'Terhambat akibat lalu lintas' },
+  { c: '10-86', d: 'Petugas membutuhkan bantuan' },
+  { c: '10-87', d: 'Pengambilan dokumen' },
+  { c: '10-88', d: 'Percobaan bunuh diri' },
+  { c: '10-89', d: 'Pengeboman' },
+  { c: '10-90', d: 'Perampokan bank' },
+  { c: '10-91', d: 'Laporan gangguan hewan' },
+  { c: '10-92', d: 'Parkir ilegal' },
+  { c: '10-93', d: 'Blokade jalan' },
+  { c: '10-94', d: 'Balap liar' },
+  { c: '10-95', d: 'Tahanan melarikan diri' },
+  { c: '10-96', d: 'Subjek gangguan jiwa bersikap agresif' },
+  { c: '10-97', d: 'Telah tiba di lokasi' },
+  { c: '10-98', d: 'Penugasan selesai' },
+  { c: '10-99', d: 'Buronan / barang hasil kejahatan terindikasi' },
+
+  // =====================
+  // RESPONSE CODES
+  // =====================
+  { c: 'Code 1', d: 'Respon normal tanpa prioritas' },
+  { c: 'Code 2', d: 'Respon cepat dengan lampu rotator' },
+  { c: 'Code 3', d: 'Respon darurat dengan lampu dan sirine' },
+  { c: 'Code 4', d: 'Situasi terkendali' },
+  { c: 'Code 5', d: 'Pengintaian atau pengawasan' },
+  { c: 'Code 6', d: 'Sedang melakukan penyelidikan' },
+  { c: 'Code 7', d: 'Istirahat makan' },
+  { c: 'Code 8', d: 'Meminta bantuan unit lain' },
+  { c: 'Code 10', d: 'Ancaman bom' },
+
+  // =====================
+  // SIGNAL / S-CODES
+  // =====================
+  { c: 'S4', d: 'Meminta bantuan segera' },
+  { c: 'S5', d: 'Tersangka telah diamankan' },
+  { c: 'S6', d: 'Tempat kejadian aman' },
+  { c: 'S7', d: 'Petugas membutuhkan bantuan darurat' },
+  { c: 'S8', d: 'Kemacetan lalu lintas' },
+  { c: 'S9', d: 'Penyekatan atau blokade jalan' },
+  { c: 'S10', d: 'Tim khusus telah diberitahu' },
+  { c: 'S11', d: 'Tembakan dilepaskan' },
+  { c: 'S12', d: 'Situasi penyanderaan' },
+
+  // =====================
+  // INFORMATION FLAGS
+  // =====================
+  { c: 'INFO-A', d: 'Tersangka membawa senjata' },
+  { c: 'INFO-B', d: 'Memiliki riwayat kekerasan' },
+  { c: 'INFO-C', d: 'Memiliki risiko gangguan mental' },
+  { c: 'INFO-D', d: 'Terafiliasi dengan kelompok kriminal' },
+  { c: 'INFO-E', d: 'Kendaraan hasil curian' },
+  { c: 'INFO-F', d: 'Surat penangkapan aktif' },
+  { c: 'INFO-G', d: 'SIM sedang dibekukan' },
+  { c: 'INFO-H', d: 'Pemberhentian berisiko tinggi' }
+
+];
+
+        // NEW DATA FOR ADDONS
+        const commands = [
+            { cmd: "/m", desc: "Megaphone (Jarak Jauh)", type: "traffic" },
+            { cmd: "/r", desc: "Radio Department", type: "patrol" },
+            { cmd: "/d", desc: "Department Radio (All)", type: "patrol" },
+            { cmd: "/su", desc: "Suspect (Beri Wanted)", type: "arrest" },
+            { cmd: "/cuff", desc: "Borgol Suspect", type: "arrest" },
+            { cmd: "/uncuff", desc: "Lepas Borgol", type: "arrest" },
+            { cmd: "/frisk", desc: "Geledah Badan", type: "arrest" },
+            { cmd: "/tazer", desc: "Ambil Tazer", type: "arrest" },
+            { cmd: "/bk", desc: "Backup Request (Panic)", type: "patrol" },
+            { cmd: "/traffic", desc: "Deploy Traffic Cone", type: "traffic" },
+            { cmd: "/impound", desc: "Impound Vehicle", type: "traffic" },
+            { cmd: "/jail", desc: "Penjarakan Suspect", type: "arrest" }
+        ];
+
+        const penalCodeSOP = [
+            {
+    id: "1",
+    name: "PART I – NAMA & LEGAL STATUS",
+    desc: "Institusi ini bernama San Andreas Police Department (SAPD) dan merupakan badan penegak hukum resmi Negara Bagian San Andreas dengan kewenangan penuh sesuai konstitusi negara bagian."
+  },
+  {
+    id: "2",
+    name: "PART I.A – SIMBOL & IDENTITAS",
+    desc: "SAPD memiliki lambang, seragam, dan identitas resmi yang hanya boleh digunakan oleh anggota aktif dan sah."
+  },
+  {
+    id: "3",
+    name: "PART II – TUJUAN UTAMA",
+    desc: "SAPD dibentuk untuk menegakkan hukum, menjaga stabilitas keamanan, serta memastikan ketertiban umum di seluruh wilayah San Andreas."
+  },
+  {
+    id: "4",
+    name: "PART II.A – FUNGSI OPERASIONAL",
+    desc: "Fungsi SAPD meliputi patroli, investigasi kriminal, pengendalian massa, respon darurat, dan penegakan hukum lalu lintas."
+  },
+  {
+    id: "5",
+    name: "PART II.B – PELAYANAN PUBLIK",
+    desc: "SAPD wajib memberikan pelayanan kepada masyarakat secara adil, netral, profesional, dan tanpa diskriminasi."
+  },
+  {
+    id: "6",
+    name: "PART III – DASAR HUKUM",
+    desc: "Seluruh kewenangan SAPD bersumber dari Konstitusi San Andreas, hukum negara bagian, serta peraturan internal SAPD."
+  },
+  {
+    id: "7",
+    name: "PART III.A – PRINSIP LEGALITAS",
+    desc: "Setiap tindakan anggota SAPD wajib memiliki dasar hukum yang jelas dan dapat dipertanggungjawabkan."
+  },
+  {
+    id: "8",
+    name: "PART III.B – AKUNTABILITAS",
+    desc: "Anggota SAPD bertanggung jawab penuh atas setiap tindakan operasional dan administratif yang dilakukan."
+  },
+  {
+    id: "9",
+    name: "PART IV – STRUKTUR KOMANDO",
+    desc: "SAPD dipimpin oleh Commissioner sebagai otoritas tertinggi dengan rantai komando resmi yang bersifat hierarkis dan wajib dipatuhi."
+  },
+  {
+    id: "10",
+    name: "PART IV.A – RANTAI PANGKAT",
+    desc: "Rantai komando terdiri dari Commissioner, Chief of Police, Deputy Chief, Commander, Captain, Lieutenant, Sergeant, Detective,Police officer hingga Police Cadet."
+  },
+  {
+    id: "11",
+    name: "PART IV.B – PROMOSI & DEMOSI",
+    desc: "Setiap promosi, mutasi, atau penurunan pangkat hanya dapat dilakukan melalui persetujuan resmi Commissioner dan Command Staff."
+  },
+  {
+    id: "12",
+    name: "PART V – KEWENANGAN UMUM",
+    desc: "SAPD berwenang melakukan pemeriksaan, penahanan, penangkapan, penyitaan, dan penggunaan kekuatan sesuai hukum."
+  },
+  {
+    id: "13",
+    name: "PART V.A – PENGGUNAAN KEKUATAN",
+    desc: "Penggunaan kekuatan fisik maupun senjata api hanya diperbolehkan jika diperlukan, proporsional, dan sebagai upaya terakhir."
+  },
+  {
+    id: "14",
+    name: "PART V.B – PENANGKAPAN",
+    desc: "Penangkapan hanya dapat dilakukan berdasarkan dugaan kuat, bukti yang cukup, atau perintah hukum yang sah."
+  },
+  {
+    id: "15",
+    name: "PART V.C – PENGGELEDAHAN & PENYITAAN",
+    desc: "Penggeledahan dan penyitaan wajib mengikuti prosedur hukum dan dapat dilakukan dengan atau tanpa surat perintah sesuai keadaan darurat."
+  },
+  {
+    id: "16",
+    name: "PART VI – KODE ETIK PROFESIONAL",
+    desc: "Setiap anggota wajib menjaga kehormatan, integritas, profesionalisme, serta citra SAPD baik di dalam maupun di luar dinas."
+  },
+  {
+    id: "17",
+    name: "PART VI.A – NETRALITAS & IMPARSIALITAS",
+    desc: "Anggota SAPD dilarang berpihak, menyalahgunakan jabatan, atau bertindak berdasarkan kepentingan pribadi."
+  },
+  {
+    id: "18",
+    name: "PART VI.B – LARANGAN KORUPSI",
+    desc: "Segala bentuk suap, pemerasan, penyalahgunaan wewenang, dan konflik kepentingan dilarang keras."
+  },
+  {
+    id: "19",
+    name: "PART VII – DISIPLIN & KEHADIRAN",
+    desc: "Anggota wajib menjaga disiplin, kehadiran, dan kesiapsiagaan selama masa dinas aktif."
+  },
+  {
+    id: "20",
+    name: "PART VII.A – KETIDAKHADIRAN",
+    desc: "Ketidakhadiran atau keterlambatan tanpa alasan yang sah dapat dikenakan sanksi administratif."
+  },
+  {
+    id: "21",
+    name: "PART VII.B – KERAHASIAAN INFORMASI",
+    desc: "Informasi internal SAPD bersifat rahasia dan dilarang disebarluaskan tanpa izin resmi."
+  },
+  {
+    id: "22",
+    name: "PART VIII – HUBUNGAN DENGAN MASYARAKAT",
+    desc: "SAPD wajib membangun hubungan yang baik dengan masyarakat melalui sikap sopan, adil, dan komunikatif."
+  },
+  {
+    id: "23",
+    name: "PART VIII.A – PENGADUAN PUBLIK",
+    desc: "Masyarakat berhak mengajukan laporan atau pengaduan terhadap anggota SAPD melalui jalur resmi."
+  },
+  {
+    id: "24",
+    name: "PART IX – SANKSI & HUKUMAN",
+    desc: "Pelanggaran terhadap konstitusi dan peraturan SAPD dapat dikenakan sanksi bertingkat."
+  },
+  {
+    id: "25",
+    name: "PART IX.A – JENIS SANKSI",
+    desc: "Sanksi dapat berupa peringatan, demosi, skorsing sementara, hingga pemberhentian tidak hormat."
+  },
+  {
+    id: "26",
+    name: "PART X – KEADAAN KHUSUS",
+    desc: "Dalam keadaan darurat, SAPD dapat mengambil tindakan luar biasa sepanjang tetap sesuai hukum."
+  },
+  {
+    id: "27",
+    name: "PART X.A – OPERASI KHUSUS",
+    desc: "Operasi khusus hanya dapat dilakukan atas perintah Command Staff atau Commissioner."
+  },
+  {
+    id: "28",
+    name: "PART XI – AMANDEMEN",
+    desc: "Setiap perubahan atau penambahan konstitusi SAPD wajib melalui persetujuan Commissioner dan Command Staff."
+  },
+  {
+    id: "29",
+    name: "PART XII – KETENTUAN PENUTUP",
+    desc: "Konstitusi ini merupakan hukum tertinggi internal SAPD dan berlaku sejak tanggal disahkan."
+  },
+  {    
+    id: "30",
+    name: "MOTTO SAPD",
+    desc: "'To Protect and to Serve!' mencerminkan komitmen SAPD dalam melindungi masyarakat dan memberikan pelayanan terbaik."
+  }
+  
+        ];
+
+        let selected = [];
+        let timerInt = null, sec = 0;
+
+        window.onload = () => { renderGrid(); renderCodex(); initDateMask(); changeTemplate(); bindEvidence(); renderCommands('all'); renderSOP(); };
+
+        window.nav = (id) => {
+            document.querySelectorAll('.view').forEach(e => e.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            document.querySelectorAll('nav button').forEach(e => e.classList.remove('active'));
+            document.getElementById('btn-'+id).classList.add('active');
+        };
+
+        /* === CALCULATOR === */
+        function renderGrid() {
+            const term = document.getElementById('chargeSearch').value.toLowerCase();
+            document.getElementById('chargeGridContainer').innerHTML = charges.filter(c => c.name.toLowerCase().includes(term)).map(c => {
+                const active = selected.some(s => s.code === c.code);
+                return `<div class="charge-tile ${active?'selected':''}" onclick="toggle('${c.code}')"><div class="tile-code">${c.code}</div><div class="tile-name">${c.name}</div><div class="tile-stat">${c.time}m/$${c.fine}</div></div>`;
+            }).join('');
+            updateCalc();
+        }
+        function toggle(code) {
+            const item = charges.find(c => c.code === code);
+            const idx = selected.findIndex(s => s.code === code);
+            if(idx > -1) selected.splice(idx, 1); else selected.push(item);
+            renderGrid();
+        }
+        function updateCalc() {
+            const j = selected.reduce((a,b)=>a+b.time,0);
+            const f = selected.reduce((a,b)=>a+b.fine,0);
+            const s = document.getElementById('suspectInput').value || "ID";
+            document.getElementById('outJail').innerText = j;
+            document.getElementById('outFine').innerText = f;
+            document.getElementById('cmdText').innerText = `/arrest ${s} ${j} ${f}`;
+        }
+        function resetCalc() { selected=[]; document.getElementById('suspectInput').value=""; renderGrid(); }
+        function copyCmd() { navigator.clipboard.writeText(document.getElementById('cmdText').innerText); alert("Copied!"); }
+
+        /* === DOCS === */
+        function changeTemplate() {
+            const t = document.getElementById('docType').value;
+            const custom = document.getElementById('customTitleGroup');
+            
+            if(t === 'blank') {
+                custom.classList.remove('hidden');
+                document.getElementById('docTitleDisplay').innerText = document.getElementById('customTitle').value || "OFFICIAL DOCUMENT";
+            } else {
+                custom.classList.add('hidden');
+                if(templates[t]) {
+                    document.getElementById('docBody').value = templates[t].body;
+                    document.getElementById('docTitleDisplay').innerText = templates[t].title;
+                }
+            }
+            updateDoc();
+        }
+        function updateDoc() {
+            const t = document.getElementById('docType').value;
+            if(t === 'blank') document.getElementById('docTitleDisplay').innerText = document.getElementById('customTitle').value.toUpperCase() || "OFFICIAL DOCUMENT";
+            
+            ['Ref','Date','Officer','Target','Loc'].forEach(id => document.getElementById('view'+id).innerText = document.getElementById('doc'+id).value || "...");
+            document.getElementById('viewSign').innerText = document.getElementById('docOfficer').value || "OFFICER";
+            document.getElementById('viewDept').innerText = document.getElementById('docDept').value.toUpperCase() || "SAN ANDREAS POLICE DEPT"; 
+            document.getElementById('viewBody').innerText = document.getElementById('docBody').value;
+        }
+
+        /* === REPORT GEN (NEW) === */
+        function genReport(type) {
+            const officer = document.getElementById('rptOfficer').value;
+            const suspect = document.getElementById('rptSuspect').value || "Unknown";
+            const charges = document.getElementById('rptCharges').value;
+            const chron = document.getElementById('rptChronology').value;
+            const date = new Date().toLocaleString();
+            
+            let txt = "";
+            if(type === 'arrest') {
+                txt = `**[ARREST REPORT]**\n**Date:** ${date}\n**Officer:** ${officer}\n--------------------------------\n**Suspect:** ${suspect}\n**Charges:** ${charges}\n--------------------------------\n**Chronology:**\n${chron}\n--------------------------------\n**Status:** JAILED`;
+            } else {
+                txt = `**[INCIDENT REPORT]**\n**Date:** ${date}\n**Officer:** ${officer}\n--------------------------------\n**Involved:** ${suspect}\n**Description:**\n${chron}`;
+            }
+            document.getElementById('rptOutput').value = txt;
+        }
+        function copyToClip(id) {
+            const el = document.getElementById(id);
+            el.select();
+            document.execCommand("copy");
+            alert("Text Copied!");
+        }
+
+        /* === CHEAT SHEET (NEW) === */
+        function renderCommands(filter) {
+            const grid = document.getElementById('cmdGrid');
+            grid.innerHTML = "";
+            commands.forEach(c => {
+                if(filter === 'all' || c.type === filter) {
+                    const el = document.createElement('div');
+                    el.className = 'cmd-card';
+                    el.innerHTML = `<code>${c.cmd}</code><span>${c.desc}</span>`;
+                    el.onclick = () => { navigator.clipboard.writeText(c.cmd + " "); el.style.background="#0f0"; setTimeout(()=>el.style.background="",200); };
+                    grid.appendChild(el);
+                }
+            });
+        }
+        function filterCmd(type) {
+            document.querySelectorAll('.pill').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+            renderCommands(type);
+        }
+
+        /* === RADIO BUILDER (NEW) === */
+        function buildRadio() {
+            const t = document.getElementById('radType').value;
+            const l = document.getElementById('radLoc').value || "Unknown Loc";
+            const d = document.getElementById('radDesc').value || "N/A";
+            let txt = "";
+            if(t=='traffic') txt=`10-55 on a ${d} at ${l}. Code 2.`;
+            else if(t=='pursuit') txt=`10-80 in progress! Target: ${d}, Heading from ${l}. Request backup!`;
+            else if(t=='backup') txt=`Requesting 10-70 (Backup) at ${l}. Situation Urgent.`;
+            else if(t=='status') txt=`10-20 at ${l}. Code 4 (Under Control).`;
+            document.getElementById('radOutput').innerText = txt;
+        }
+        function copyText(t) { navigator.clipboard.writeText(t); alert("Radio Copied!"); }
+
+        /* === SOP VIEWER (NEW) === */
+        function renderSOP() {
+            const q = document.getElementById('sopSearch').value.toLowerCase();
+            document.getElementById('sopList').innerHTML = penalCodeSOP.filter(p=>p.name.toLowerCase().includes(q) || p.desc.toLowerCase().includes(q)).map(p=>`
+                <div class="sop-item"><h4>Bagian ${p.id}: ${p.name}</h4><p>${p.desc}</p></div>
+            `).join('');
+        }
+
+        /* === NOTES (NEW) === */
+        function downloadNotes() {
+            const t = document.getElementById('myNotes').value;
+            const blob = new Blob([t], {type: "text/plain"});
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `PatrolNotes-${Date.now()}.txt`;
+            a.click();
+        }
+
+        /* === EVIDENCE & PHONETIC === */
+        function bindEvidence() {
+            ['evCase','evType','evDesc','evSus','evLoc'].forEach(id => document.getElementById(id).addEventListener('input', () => {
+                document.getElementById('p'+id.substring(2)).innerText = document.getElementById(id).value || "...";
+            }));
+        }
+        /* === SYSTEM PRINTING ENGINE (FIXED V6) === */
+        
+        // 1. Fungsi Print Label (Mode Overlay)
+        function printLabel() {
+            // Ambil elemen label
+            const original = document.querySelector('.label-preview');
+            const clone = original.cloneNode(true);
+            
+            // Buat wadah overlay
+            const overlay = document.createElement('div');
+            overlay.id = 'print-overlay';
+            overlay.appendChild(clone);
+            document.body.appendChild(overlay);
+            
+            // Pasang bendera: MODE LABEL
+            document.body.classList.add('mode-print-label');
+            
+            // Eksekusi
+            setTimeout(() => {
+                window.print();
+                // Bersih-bersih setelah print
+                document.body.classList.remove('mode-print-label');
+                document.body.removeChild(overlay);
+            }, 300);
+        }
+
+        // 2. Fungsi Print Dokumen A4 (Mode Direct)
+        function printDoc() {
+            // Pasang bendera: MODE DOCUMENT
+            document.body.classList.add('mode-print-doc');
+            
+            setTimeout(() => {
+                window.print();
+                // Bersih-bersih
+                document.body.classList.remove('mode-print-doc');
+            }, 300);
+        }
+        function translatePhonetic() {
+            const val = document.getElementById('phoneInput').value.toUpperCase();
+            document.getElementById('phoneOutput').innerHTML = val.split('').map(c => nato[c] ? `<span style="color:var(--primary)">${c}</span>${nato[c].substring(1)}` : c).join(' • ');
+        }
+
+        /* === UTILS === */
+        function renderCodex() {
+            const t = document.getElementById('codexSearch').value.toLowerCase();
+            document.getElementById('codexList').innerHTML = codes.filter(x=>x.c.toLowerCase().includes(t)).map(x=>`<div class="charge-tile" style="height:auto; min-height:60px; justify-content:center;"><div class="tile-code" style="color:var(--success)">${x.c}</div><div class="tile-name">${x.d}</div></div>`).join('');
+        }
+        function initDateMask() {
+            document.getElementById('docDate').addEventListener('input', e => {
+                let v = e.target.value.replace(/\D/g,'').substring(0,8);
+                if(v.length >= 5) v = v.substring(0,2)+'/'+v.substring(2,4)+'/'+v.substring(4,8);
+                else if(v.length >= 3) v = v.substring(0,2)+'/'+v.substring(2);
+                e.target.value = v;
+            });
+        }
+        function timerToggle() {
+            const btn = document.getElementById('tBtn');
+            if(timerInt) { clearInterval(timerInt); timerInt=null; btn.innerHTML='<i class="fas fa-play"></i>'; }
+            else { timerInt=setInterval(()=>{ sec++; document.getElementById('patrolTimer').innerText=new Date(sec*1000).toISOString().substr(11,8); }, 1000); btn.innerHTML='<i class="fas fa-pause"></i>'; }
+        }
+        function timerReset() { if(timerInt) timerToggle(); sec=0; document.getElementById('patrolTimer').innerText="00:00:00"; }
+    </script>
+</body>
+</html>
