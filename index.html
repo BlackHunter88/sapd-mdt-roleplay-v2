@@ -6,7 +6,8 @@
     <title>SAPD PHANTOM V6 [FIXED PDF]</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;700&family=Rajdhani:wght@500;700;800&family=Courier+Prime:wght@400;700&family=Libre+Barcode+39+Text&family=Black+Ops+One&display=swap" rel="stylesheet">
-    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
     <style>
         /* === CORE VARS === */
         :root {
@@ -194,6 +195,15 @@
 
         /* === PHONETIC OUTPUT === */
         .phonetic-output { background: #000; border: 1px solid var(--primary); padding: 20px; font-family: var(--font-mono); color: var(--accent); font-size: 1.5rem; min-height: 100px; border-radius: 6px; margin-top: 20px; line-height: 1.5; text-transform: uppercase; }
+        
+            /* === TACTICAL BOARD === */
+         .color-btn {
+          width: 25px; height: 25px; border-radius: 50%; cursor: pointer;
+            border: 2px solid transparent; transition: 0.2s;
+}
+.color-btn:hover { transform: scale(1.2); }
+.color-btn.active { border-color: #fff; box-shadow: 0 0 10px rgba(255,255,255,0.5); }
+#tacCanvas { display: block; touch-action: none; }
 
         /* === CSS AJAIB UNTUK PRINT 1 HALAMAN (FIXED) === */
         @media print {
@@ -282,6 +292,935 @@
         
         .hidden { display: none !important; }
         .flex-row { display: flex; gap: 10px; }
+
+
+
+
+    
+        /* === FIELD GUIDE STYLES === */
+.guide-header {
+    border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 15px;
+    font-family: var(--font-tech); font-size: 1.2rem; letter-spacing: 1px; color: var(--primary);
+}
+.guide-desc { color: #888; margin-bottom: 20px; font-style: italic; font-size: 0.9rem; }
+
+/* Script Box */
+.script-box {
+    background: #1a1a1e; border-left: 3px solid #fff; padding: 20px;
+    font-family: 'Times New Roman', serif; font-size: 1.1rem; line-height: 1.6;
+    color: #e5e7eb; margin-bottom: 10px; font-style: italic;
+}
+
+/* Steps Layout */
+.rp-step {
+    display: flex; gap: 15px; background: #0a0a0c; border: 1px solid #222;
+    padding: 15px; margin-bottom: 15px; border-radius: 6px;
+    border-left: 3px solid var(--success);
+}
+.step-num {
+    font-size: 1.5rem; font-weight: 800; color: #444; font-family: var(--font-tech);
+    min-width: 30px; text-align: center;
+}
+.step-content strong { display: block; color: #fff; margin-bottom: 8px; font-family: var(--font-tech); }
+.step-content p { font-size: 0.85rem; color: #888; margin-bottom: 8px; }
+
+/* Command Code Style */
+.cmd-code {
+    font-family: var(--font-mono); font-size: 0.8rem;
+    color: #a78bfa; /* Warna Ungu soft untuk /me */
+    background: rgba(0,0,0,0.3); padding: 4px 8px; margin-bottom: 4px;
+    border-radius: 4px; border-left: 2px solid #555;
+}
+
+/* Warning Box */
+.warning-box {
+    background: rgba(239, 68, 68, 0.1); border: 1px dashed var(--danger);
+    color: var(--danger); padding: 15px; text-align: center; margin-bottom: 20px; border-radius: 4px;
+}
+
+        /* === VISUAL LABS: ARREST CARD === */
+.arrest-canvas {
+    width: 600px; height: 350px;
+    background: #0d1117; /* Dark Blue-Black */
+    border: 1px solid #30363d;
+    font-family: 'Rajdhani', sans-serif;
+    color: #c9d1d9;
+    display: flex; flex-direction: column;
+    box-shadow: 0 0 30px rgba(0,0,0,0.8);
+    position: relative;
+    overflow: hidden;
+}
+/* Background Grid Effect */
+.arrest-canvas::before {
+    content:''; position:absolute; top:0; left:0; width:100%; height:100%;
+    background-image: linear-gradient(#21262d 1px, transparent 1px), linear-gradient(90deg, #21262d 1px, transparent 1px);
+    background-size: 20px 20px; opacity:0.2; pointer-events:none;
+}
+
+.ac-header {
+    background: #161b22; border-bottom: 2px solid var(--primary);
+    padding: 10px 20px; display: flex; justify-content: space-between; align-items: center;
+    z-index: 2;
+}
+.ac-brand { color: var(--primary); font-weight: 800; font-size: 1.2rem; letter-spacing: 1px; display: flex; align-items: center; gap: 10px; }
+.ac-id { font-family: var(--font-mono); font-size: 0.9rem; color: #8b949e; }
+
+.ac-content { flex: 1; padding: 20px; display: flex; gap: 20px; z-index: 2; }
+
+/* Foto Mugshot */
+.ac-photo-frame {
+    width: 160px; height: 200px; background: #000;
+    border: 2px solid #30363d; position: relative;
+}
+.ac-photo-frame img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(50%); }
+.ac-stamp {
+    position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%) rotate(-5deg);
+    border: 3px solid var(--danger); color: var(--danger);
+    font-weight: 900; font-size: 1.2rem; padding: 2px 10px;
+    text-transform: uppercase; opacity: 0.8; background: rgba(0,0,0,0.5);
+    white-space: nowrap;
+}
+
+/* Detail Form */
+.ac-details { flex: 1; display: flex; flex-direction: column; gap: 10px; }
+.ac-row { width: 100%; }
+.ac-row.flex { display: flex; gap: 10px; }
+.ac-box {
+    background: #161b22; border: 1px solid #30363d; padding: 5px 10px;
+    flex: 1; display: flex; flex-direction: column;
+}
+.ac-box label { font-size: 0.6rem; color: #8b949e; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
+.ac-box span { font-weight: 700; font-size: 1rem; color: #e6edf3; }
+
+.ac-footer {
+    background: #161b22; border-top: 1px solid #30363d;
+    padding: 8px 20px; display: flex; justify-content: space-between; align-items: center;
+    font-size: 0.75rem; color: #8b949e; z-index: 2;
+}
+
+    /* GUIDE NAV BUTTONS */
+.btn-guide {
+    display: flex; align-items: center; gap: 10px; width: 100%;
+    background: transparent; border: none; color: #888;
+    padding: 10px 15px; cursor: pointer; text-align: left;
+    transition: 0.2s; border-left: 3px solid transparent;
+    font-size: 0.85rem; font-weight: 600;
+}
+.btn-guide:hover { background: rgba(255,255,255,0.05); color: #fff; }
+.btn-guide.active { background: rgba(59,130,246,0.1); color: var(--primary); border-left-color: var(--primary); }
+.btn-guide i { width: 20px; text-align: center; }
+
+/* SCRIPT CARDS */
+.script-card {
+    background: #1f2937; border: 1px solid #374151; padding: 15px;
+    border-radius: 6px; margin-bottom: 10px; display: flex;
+    justify-content: space-between; align-items: center; gap: 10px;
+}
+.script-card p { font-family: 'Courier Prime', monospace; font-size: 0.9rem; margin: 0; color: #e5e7eb; }
+.script-card.red { border-left: 3px solid var(--danger); background: rgba(239,68,68,0.1); }
+
+/* STEP BOX */
+.step-box {
+    display: flex; gap: 15px; margin-bottom: 20px;
+    background: #0d0d10; padding: 15px; border-radius: 6px; border: 1px solid #222;
+}
+.step-n {
+    font-size: 1.5rem; font-weight: 900; color: #444; font-family: var(--font-tech);
+    display: flex; align-items: center; justify-content: center; width: 40px;
+}
+.step-d { flex: 1; }
+.step-d strong { display: block; color: #fff; margin-bottom: 8px; font-family: var(--font-tech); letter-spacing: 1px; }
+
+/* COMMAND CODE */
+.cmd {
+    font-family: var(--font-mono); font-size: 0.8rem; color: #a78bfa;
+    background: rgba(0,0,0,0.3); padding: 5px 8px; margin-bottom: 5px;
+    border-radius: 4px; border-left: 2px solid #555; cursor: pointer;
+}
+.cmd:hover { background: rgba(167, 139, 250, 0.1); border-left-color: #a78bfa; }
+
+        /* === ARREST CARD V2 (REFORMED) === */
+.ac-card {
+    width: 500px; background: #0f1015; border: 1px solid #333;
+    font-family: 'Inter', sans-serif; position: relative;
+    box-shadow: 0 0 20px rgba(0,0,0,0.5); display: flex; flex-direction: column;
+}
+.ac-risk-bar {
+    text-align: center; font-weight: 900; color: #000; padding: 5px; font-size: 0.9rem; letter-spacing: 2px;
+}
+.risk-low { border: 2px solid #10b981; }
+.risk-low .ac-risk-bar { background: #10b981; content: 'LOW RISK'; }
+.risk-med { border: 2px solid #f59e0b; }
+.risk-med .ac-risk-bar { background: #f59e0b; content: 'MEDIUM RISK'; }
+.risk-high { border: 2px solid #ef4444; box-shadow: 0 0 20px rgba(239,68,68,0.3); }
+.risk-high .ac-risk-bar { background: #ef4444; color: #fff; animation: blink 2s infinite; content: 'HIGH RISK'; }
+
+.ac-main { display: flex; padding: 20px; gap: 20px; }
+.ac-photo { width: 120px; height: 150px; background: #000; position: relative; border: 1px solid #444; }
+.ac-photo img { width: 100%; height: 100%; object-fit: cover; }
+.ac-stamp { position: absolute; bottom: 5px; left: 5px; background: red; color: white; padding: 2px 5px; font-size: 0.6rem; font-weight: bold; transform: rotate(-5deg); }
+
+.ac-info { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+.ac-header-text h2 { margin: 0; font-size: 1.2rem; color: #fff; letter-spacing: 1px; }
+.ac-header-text small { color: #666; font-size: 0.7rem; text-transform: uppercase; }
+.ac-field { display: flex; flex-direction: column; }
+.ac-field label { font-size: 0.6rem; color: #666; font-weight: bold; }
+.ac-field span { font-size: 0.9rem; color: #eee; font-weight: 600; border-bottom: 1px solid #333; padding-bottom: 2px; }
+.ac-field.charges span { font-family: 'Courier Prime', monospace; color: var(--danger); font-size: 0.8rem; height: 40px; overflow: hidden; }
+.ac-row { display: flex; gap: 10px; }
+
+.ac-footer { background: #050505; color: #444; font-size: 0.7rem; padding: 5px 20px; text-align: right; text-transform: uppercase; }
+
+/* === ID CARD === */
+.id-card {
+    width: 400px; height: 240px; background: #fff; color: #000;
+    display: flex; border-radius: 10px; overflow: hidden;
+    background-image: linear-gradient(135deg, #f0f0f0 25%, #ffffff 100%);
+    position: relative;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+.id-left { width: 35%; background: #002855; display: flex; align-items: center; justify-content: center; }
+.id-left img { width: 80%; border: 3px solid #fff; border-radius: 4px; }
+.id-right { flex: 1; padding: 20px; position: relative; }
+.id-head { font-weight: 900; font-size: 1.1rem; color: #002855; line-height: 1; }
+.id-sub { font-size: 0.7rem; color: #666; margin-bottom: 20px; letter-spacing: 1px; text-transform: uppercase; }
+.id-name { font-size: 1.4rem; font-weight: 800; text-transform: uppercase; margin-bottom: 5px; }
+.id-rank { background: #002855; color: #fff; display: inline-block; padding: 3px 8px; font-size: 0.7rem; font-weight: bold; border-radius: 4px; margin-bottom: 15px; text-transform: uppercase; }
+.id-row { display: flex; gap: 20px; font-size: 0.8rem; }
+
+/* === LICENSE PLATE === */
+.plate-card {
+    width: 300px; height: 150px; border-radius: 10px; padding: 10px;
+    display: flex; flex-direction: column; justify-content: space-between;
+    box-shadow: 0 5px 10px rgba(0,0,0,0.5); border: 2px solid #fff;
+    text-align: center; font-family: 'Impact', sans-serif;
+}
+.plate-card.ls { background: linear-gradient(to bottom, #002855 0%, #fff 40%, #fff 60%, #002855 100%); } /* LS Style */
+.plate-card.sf { background: #fff; border: 4px solid #002855; }
+.plate-card.lv { background: #fff; color: #000; }
+.plate-top { color: #d00; font-family: 'Arial'; font-weight: bold; font-size: 0.9rem; text-shadow: 1px 1px 0 #fff; }
+.plate-text { font-size: 4rem; color: #002855; letter-spacing: 5px; text-shadow: 2px 2px 0 rgba(0,0,0,0.2); }
+
+/* === BODYCAM OVERLAY === */
+.bodycam-overlay {
+    width: 640px; height: 360px; background: transparent;
+    position: relative; border: 1px dashed #444;
+    font-family: 'Courier New', monospace; font-weight: bold;
+    color: #fff; text-shadow: 1px 1px 2px #000;
+}
+.bc-top-right { position: absolute; top: 20px; right: 20px; text-align: right; }
+.bc-top-left { position: absolute; top: 20px; left: 20px; text-align: left; }
+.bc-row { margin-bottom: 5px; font-size: 1.2rem; }
+.bc-rec { color: red; animation: blink 1s infinite; margin-right: 5px; }
+
+/* === MAP NODE === */
+.map-node {
+    position: absolute; width: 60px; height: 60px; background: #222; border: 2px solid #fff;
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    cursor: grab; z-index: 10; font-size: 1.5rem; color: #fff;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+}
+.map-node:active { cursor: grabbing; }
+.map-node.suspect { border-color: red; color: red; }
+.map-node.evidence { border-color: yellow; color: yellow; }
+
+
+    /* === TAMBAHAN CSS UNTUK EXPORT IMAGE === */
+/* === TAMBAHAN CSS UNTUK EXPORT JPG RECORDS === */
+/* TAMBAHAN DI PALING BAWAH CSS */
+.export-container {
+    position: fixed; 
+    top: -9999px; left: -9999px; /* Lempar jauh keluar layar */
+    width: 800px; 
+    background: #fff; color: #000;
+    padding: 40px; 
+    font-family: 'Courier Prime', monospace;
+    border: 1px solid #000;
+    z-index: -1; /* Pastikan dia di belakang */
+    pointer-events: none; /* Pastikan tidak memblokir klik mouse */
+}
+
+/* TABLE STYLE UNTUK JPG */
+.export-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; margin-top: 20px; }
+.export-table th { background: #111; color: #fff; padding: 10px; border: 1px solid #000; }
+.export-table td { border: 1px solid #000; padding: 8px; vertical-align: top; }
+
+        /* === CSS KHUSUS EXPORT GAMBAR (RECORDS & VISUAL) === */
+.export-hidden-container {
+    position: fixed; left: -9999px; top: -9999px; /* Sembunyikan dari layar */
+    width: 800px; background: #fff; color: #000;
+    padding: 40px; font-family: 'Courier Prime', monospace;
+    border: 1px solid #000;
+}
+.ex-header { text-align: center; border-bottom: 3px double #000; padding-bottom: 20px; margin-bottom: 20px; }
+.ex-header h1 { font-family: 'Impact', sans-serif; font-size: 2rem; margin:0; }
+.ex-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; margin-top: 20px; }
+.ex-table th { background: #222; color: #fff; padding: 10px; border: 1px solid #000; }
+.ex-table td { border: 1px solid #000; padding: 8px; vertical-align: top; }
+
+/* FIX VISUAL LABS PREVIEW */
+.preview-box {
+    background: #000; border: 1px solid #333; padding: 20px;
+    display: flex; justify-content: center; align-items: center;
+    overflow: auto; min-height: 400px;
+}
+
+.preview-container {
+    background: #151518;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+    position: relative;
+    background-image: radial-gradient(#222 1px, transparent 1px);
+    background-size: 20px 20px;
+}
+/* === VISUAL LABS V2: CORE === */
+.preview-stage {
+    background: #000;
+    padding: 20px;
+    overflow: auto;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    border-left: 1px solid #333;
+}
+
+/* === DOCUMENT SHEET BASE (Agar seperti Surat Digital) === */
+.doc-sheet {
+    width: 700px; /* Fixed Width untuk Image Export */
+    min-height: 900px;
+    background: #111;
+    color: #e2e8f0;
+    font-family: 'Inter', sans-serif;
+    border: 1px solid #333;
+    padding: 30px;
+    box-shadow: 0 0 50px rgba(0,0,0,0.8);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+.doc-sheet::before {
+    content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 5px;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+}
+
+/* HEADER STYLE */
+.ds-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #333; padding-bottom: 20px; margin-bottom: 20px; }
+.ds-brand h1 { font-family: 'Rajdhani', sans-serif; font-weight: 800; font-size: 2rem; margin: 0; letter-spacing: 2px; color: #fff; }
+.ds-brand span { font-size: 0.8rem; color: var(--primary); font-weight: bold; letter-spacing: 1px; }
+.ds-meta { text-align: right; font-family: var(--font-mono); font-size: 0.75rem; color: #666; }
+
+/* SECTIONS */
+.ds-section { margin-bottom: 20px; }
+.ds-title { background: #1e293b; color: #fff; padding: 5px 10px; font-size: 0.75rem; font-weight: 800; letter-spacing: 1px; margin-bottom: 10px; border-left: 3px solid var(--primary); }
+.ds-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+.ds-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+.ds-field { margin-bottom: 8px; }
+.ds-field label { display: block; font-size: 0.6rem; color: #64748b; font-weight: bold; text-transform: uppercase; }
+.ds-field span { display: block; font-size: 0.9rem; font-weight: 600; color: #f1f5f9; border-bottom: 1px solid #222; padding-bottom: 2px; }
+
+/* SPESIFIK: CRIMINAL RECORD */
+.mugshot-box {
+    width: 140px; height: 180px; background: #000; border: 1px solid #444; 
+    object-fit: cover; position: absolute; top: 80px; right: 30px;
+}
+.cr-charges { background: #0f0f12; padding: 10px; border: 1px solid #222; font-family: var(--font-mono); font-size: 0.8rem; color: #ef4444; min-height: 80px; }
+.cr-history { font-size: 0.8rem; color: #94a3b8; font-style: italic; border-top: 1px dashed #333; padding-top: 10px; margin-top: 10px; }
+
+/* SPESIFIK: DUTY REPORT */
+.dr-stats { display: flex; gap: 10px; margin-bottom: 20px; }
+.dr-stat-card { flex: 1; background: #1e293b; padding: 10px; border-radius: 4px; text-align: center; border: 1px solid #333; }
+.dr-stat-card h3 { font-size: 1.8rem; margin: 0; color: var(--accent); font-weight: 800; }
+.dr-stat-card span { font-size: 0.65rem; color: #94a3b8; font-weight: bold; }
+.dr-log { background: #0f0f12; border: 1px solid #222; padding: 15px; font-family: var(--font-mono); font-size: 0.85rem; color: #ccc; min-height: 200px; white-space: pre-wrap; }
+
+/* SPESIFIK: WANTED POSTER (COMPLEX) */
+.wanted-poster {
+    width: 500px; background: #f3f4f6; color: #111; padding: 20px;
+    font-family: 'Impact', sans-serif; text-align: center; position: relative;
+    border: 10px solid #111; box-shadow: 0 0 50px rgba(0,0,0,0.5);
+}
+.wp-header { font-size: 4rem; color: #b91c1c; line-height: 0.9; margin-bottom: 10px; letter-spacing: 5px; }
+.wp-sub { font-family: 'Arial Black', sans-serif; font-size: 1.2rem; background: #111; color: #fff; display: inline-block; padding: 2px 20px; margin-bottom: 20px; transform: rotate(-1deg); }
+.wp-photo-frame { width: 100%; height: 350px; background: #333; margin-bottom: 15px; position: relative; border: 4px solid #111; }
+.wp-photo-frame img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(100%) contrast(1.2); }
+.wp-stamp { 
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-15deg); 
+    font-size: 3rem; color: #b91c1c; border: 5px solid #b91c1c; padding: 10px; opacity: 0.8; 
+}
+.wp-details { text-align: left; font-family: 'Courier Prime', monospace; font-weight: bold; font-size: 0.9rem; border-top: 2px solid #111; padding-top: 10px; margin-bottom: 10px; }
+.wp-row { display: flex; justify-content: space-between; border-bottom: 1px solid #ccc; padding: 5px 0; }
+.wp-crimes { text-align: center; color: #b91c1c; font-size: 1.2rem; margin: 15px 0; line-height: 1.2; }
+.wp-footer { background: #b91c1c; color: #fff; font-size: 1.5rem; padding: 10px; margin-top: 10px; }
+
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap');
+    /* === COURT STATEMENT (LEGAL PAPER STYLE) === */
+.legal-paper {
+    width: 700px; min-height: 900px;
+    background: #fff; color: #000;
+    font-family: 'Times New Roman', serif; /* Font Wajib Hukum */
+    padding: 40px 50px;
+    box-shadow: 0 0 30px rgba(0,0,0,0.5);
+    position: relative; line-height: 1.4;
+    display: flex; flex-direction: column;
+}
+.lp-header { text-align: center; border-bottom: 2px solid #000; padding-bottom: 15px; margin-bottom: 20px; text-transform: uppercase; }
+.lp-header h2 { font-size: 1.4rem; font-weight: bold; margin: 0; letter-spacing: 1px; }
+.lp-header h3 { font-size: 1rem; font-weight: normal; margin: 5px 0 0; }
+.lp-meta { display: flex; justify-content: space-between; margin-bottom: 20px; font-weight: bold; border-bottom: 1px solid #ccc; padding-bottom: 10px; font-size: 0.9rem; }
+.lp-section { margin-bottom: 15px; }
+.lp-label { font-weight: bold; text-decoration: underline; display: block; margin-bottom: 5px; font-size: 0.9rem; }
+.lp-text { font-size: 1rem; text-align: justify; white-space: pre-wrap; margin-bottom: 10px; }
+.lp-oath { background: #f0f0f0; border: 1px solid #ccc; padding: 10px; font-style: italic; font-size: 0.9rem; margin: 15px 0; text-align: center; }
+.lp-footer { margin-top: auto; padding-top: 30px; border-top: 2px solid #000; display: flex; justify-content: space-between; align-items: flex-end; }
+.lp-sig-line { border-top: 1px solid #000; width: 200px; padding-top: 5px; margin-top: 40px; font-weight: bold; text-align: center; }
+
+/* === OFFICER AWARD (MODERN LUXURY STYLE - FIXED) === */
+.cert-frame {
+    width: 750px; min-height: 520px; /* Pakai Min-Height biar bisa manjang ke bawah */
+    background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
+    color: #fff;
+    padding: 40px;
+    position: relative;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+    display: flex; flex-direction: column; align-items: center; text-align: center;
+    border: 1px solid #334155;
+}
+/* Border Emas Mewah */
+.cert-border {
+    position: absolute; top: 15px; left: 15px; right: 15px; bottom: 15px;
+    border: 2px solid #ca8a04; /* Emas */
+    pointer-events: none;
+}
+.cert-corner {
+    position: absolute; width: 20px; height: 20px; border: 2px solid #ca8a04;
+    transition: 0.3s;
+}
+.c-tl { top: 10px; left: 10px; border-right: none; border-bottom: none; }
+.c-tr { top: 10px; right: 10px; border-left: none; border-bottom: none; }
+.c-bl { bottom: 10px; left: 10px; border-right: none; border-top: none; }
+.c-br { bottom: 10px; right: 10px; border-left: none; border-top: none; }
+
+/* Content Styling */
+.cert-header { margin-bottom: 20px; }
+.cert-icon { font-size: 3rem; color: #fbbf24; text-shadow: 0 0 20px rgba(251, 191, 36, 0.4); margin-bottom: 10px; }
+.cert-title { 
+    font-family: 'Cinzel', serif; font-size: 2.8rem; font-weight: 700; 
+    background: linear-gradient(to bottom, #fbbf24, #d97706); 
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    letter-spacing: 2px; line-height: 1; margin-bottom: 5px;
+}
+.cert-subtitle { font-family: 'Playfair Display', serif; font-size: 1rem; letter-spacing: 4px; color: #94a3b8; text-transform: uppercase; }
+
+.cert-recipient { margin: 25px 0; width: 100%; border-top: 1px solid rgba(255,255,255,0.1); border-bottom: 1px solid rgba(255,255,255,0.1); padding: 20px 0; }
+.cert-for { font-style: italic; color: #cbd5e1; font-family: 'Playfair Display', serif; font-size: 1.1rem; margin-bottom: 10px; }
+.cert-name { 
+    font-family: 'Cinzel', serif; font-size: 2.2rem; color: #fff; font-weight: bold; 
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5); text-transform: uppercase; 
+}
+.cert-rank { font-size: 0.9rem; color: #fbbf24; font-weight: bold; letter-spacing: 2px; margin-top: 5px; text-transform: uppercase; }
+
+.cert-body { 
+    font-family: 'Playfair Display', serif; font-size: 1rem; color: #e2e8f0; line-height: 1.6; 
+    max-width: 85%; margin-bottom: 30px; flex: 1; /* Biar ngisi ruang kosong */
+}
+
+.cert-footer { width: 100%; display: flex; justify-content: space-between; align-items: flex-end; padding: 0 40px; }
+.cert-sig-box { text-align: center; }
+.cert-sig-text { 
+    font-family: 'Great Vibes', cursive; font-size: 2rem; color: #fbbf24; 
+    border-bottom: 1px solid #fbbf24; padding: 0 20px; display: block; min-width: 150px; margin-bottom: 5px;
+}
+.cert-sig-label { font-size: 0.65rem; color: #94a3b8; letter-spacing: 1px; text-transform: uppercase; }
+.cert-date { font-family: 'Cinzel', serif; font-weight: bold; color: #fff; border: 1px solid #fbbf24; padding: 5px 15px; font-size: 0.8rem; }
+
+/* === NEW MODULES: IDENTITY & FIC === */
+.fic-card {
+    width: 600px;
+    background: #fff;
+    color: #000;
+    font-family: 'Arial', sans-serif;
+    border: 2px solid #333;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    position: relative;
+    box-shadow: 0 0 30px rgba(0,0,0,0.5);
+}
+.fic-header {
+    background: #000;
+    color: #fff;
+    padding: 10px;
+    text-align: center;
+    font-weight: bold;
+    text-transform: uppercase;
+    border-bottom: 2px solid #333;
+}
+.fic-section {
+    border: 1px solid #ccc;
+    padding: 8px;
+    margin-bottom: 5px;
+}
+.fic-label {
+    font-size: 0.7rem;
+    color: #666;
+    font-weight: bold;
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 2px;
+}
+.fic-value {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #000;
+    min-height: 1rem;
+    display: block;
+    border-bottom: 1px dotted #ccc;
+}
+.fic-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.fic-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+.fic-footer {
+    font-size: 0.7rem;
+    text-align: right;
+    margin-top: 10px;
+    font-style: italic;
+}
+.opt-row { display: flex; gap: 10px; align-items: center; margin-bottom: 5px; }
+.opt-row input[type="checkbox"] { width: auto; margin: 0; }
+.opt-row label { margin: 0; font-size: 0.8rem; color: #ccc; cursor: pointer; }
+
+
+    /* === OFFICER ID CARD GENERATOR === */
+.oid-container {
+    width: 600px; /* Fixed width for consistent high-res export */
+    height: 380px;
+    background: #fdfdfd;
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    font-family: 'Arial', sans-serif;
+    color: #111;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Security Pattern Background */
+.oid-bg {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background-image: radial-gradient(#ccc 1px, transparent 1px);
+    background-size: 10px 10px;
+    opacity: 0.3;
+    z-index: 0;
+}
+.oid-holo {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background: linear-gradient(135deg, transparent 40%, rgba(255, 255, 255, 0.4) 45%, rgba(0, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0.4) 55%, transparent 60%);
+    opacity: 0.3;
+    pointer-events: none;
+    z-index: 5;
+}
+
+/* Header */
+.oid-header {
+    background: #002855; /* SAPD Blue */
+    color: #fff;
+    padding: 15px 20px;
+    position: relative;
+    z-index: 1;
+    border-bottom: 4px solid #ffb700; /* Gold Strip */
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+.oid-header img { width: 50px; height: 50px; }
+.oid-header-text h1 { font-family: 'Impact', sans-serif; font-size: 1.8rem; letter-spacing: 1px; margin: 0; line-height: 1; text-transform: uppercase; }
+.oid-header-text span { font-size: 0.65rem; letter-spacing: 2px; text-transform: uppercase; font-weight: bold; color: #ffb700; }
+
+/* Content Layout */
+.oid-body {
+    flex: 1;
+    display: flex;
+    padding: 20px;
+    gap: 20px;
+    position: relative;
+    z-index: 1;
+}
+
+/* Photo Section */
+.oid-photo-box {
+    width: 140px;
+    height: 180px;
+    border: 2px solid #002855;
+    background: #e5e7eb;
+    position: relative;
+    overflow: hidden;
+}
+.oid-photo-box img { width: 100%; height: 100%; object-fit: cover; }
+.oid-rank-badge {
+    position: absolute; bottom: 0; left: 0; width: 100%;
+    background: #002855; color: #fff;
+    font-size: 0.7rem; font-weight: bold; text-align: center;
+    padding: 4px 0; text-transform: uppercase; letter-spacing: 1px;
+}
+
+/* Info Section */
+.oid-info { flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+
+.oid-main-id { border-bottom: 2px solid #eee; padding-bottom: 10px; margin-bottom: 10px; }
+.oid-label { font-size: 0.55rem; color: #666; font-weight: bold; text-transform: uppercase; display: block; margin-bottom: 2px; }
+.oid-val-lg { font-size: 1.4rem; font-weight: 900; color: #002855; text-transform: uppercase; display: block; line-height: 1; }
+.oid-val-md { font-size: 1rem; font-weight: 700; color: #333; text-transform: uppercase; }
+
+.oid-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 0.8rem; }
+.oid-grid div { display: flex; flex-direction: column; }
+.oid-val-sm { font-weight: 600; color: #000; }
+
+/* Footer & Sig */
+.oid-footer {
+    margin-top: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+.oid-sig-area { text-align: center; }
+.oid-sig {
+    font-family: 'Great Vibes', cursive; /* Pastikan font ini di load */
+    font-size: 1.5rem; color: #000;
+    border-bottom: 1px solid #000;
+    min-width: 150px;
+    display: block;
+    margin-bottom: 2px;
+}
+.oid-auth { font-size: 0.5rem; font-weight: bold; text-transform: uppercase; color: #002855; }
+
+.oid-barcode {
+    font-family: 'Libre Barcode 39 Text', cursive;
+    font-size: 2.5rem;
+    color: #000;
+    line-height: 1;
+    opacity: 0.8;
+}
+
+/* Microtext Disclaimer */
+.oid-micro {
+    position: absolute; bottom: 5px; width: 100%; text-align: center;
+    font-size: 4px; color: #aaa; text-transform: uppercase; letter-spacing: 1px;
+}
+
+
+    /* === ROSTER & RANK STYLE === */
+.roster-header {
+    display: flex; justify-content: space-between; align-items: center;
+    border-bottom: 2px solid #333; padding-bottom: 15px; margin-bottom: 20px;
+}
+.dept-title { font-family: var(--font-tech); font-size: 1.4rem; color: var(--primary); margin-bottom: 10px; border-left: 4px solid var(--primary); padding-left: 10px; }
+
+/* Rank Section Container */
+.rank-group { margin-bottom: 25px; }
+.rank-header {
+    background: #111; color: #fff; padding: 8px 15px;
+    font-family: var(--font-tech); font-size: 0.9rem; letter-spacing: 1px;
+    border-left: 3px solid #555; display: flex; justify-content: space-between;
+}
+.rank-header.high-command { border-left-color: #fbbf24; color: #fbbf24; } /* Gold for HC */
+.rank-header.command { border-left-color: #3b82f6; color: #3b82f6; } /* Blue for Cmd */
+
+/* Member Card */
+.member-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 10px; padding: 10px 0;
+}
+.member-card {
+    background: #161b22; border: 1px solid #30363d;
+    padding: 12px; display: flex; flex-direction: column; gap: 5px;
+    position: relative; transition: 0.2s;
+}
+.member-card:hover { background: #1f2937; transform: translateY(-2px); }
+.m-name { font-weight: bold; font-size: 0.95rem; color: #e5e7eb; }
+.m-badge { font-family: var(--font-mono); font-size: 0.75rem; color: #6b7280; }
+.m-div { font-size: 0.7rem; color: var(--accent); text-transform: uppercase; margin-top: auto; }
+
+/* Status Badges */
+.m-status {
+    position: absolute; top: 10px; right: 10px;
+    width: 10px; height: 10px; border-radius: 50%;
+}
+.st-active { background: #10b981; box-shadow: 0 0 5px #10b981; } /* Green */
+.st-reserve { background: #3b82f6; } /* Blue */
+.st-probation { background: #f59e0b; } /* Orange */
+.st-inactive { background: #ef4444; } /* Red */
+.st-vacant { background: #333; border: 1px solid #555; } /* Grey */
+
+/* Rank Info Table */
+.rank-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+.rank-table th { text-align: left; padding: 10px; background: #111; color: #888; border-bottom: 1px solid #333; }
+.rank-table td { padding: 10px; border-bottom: 1px solid #222; color: #ccc; }
+.rank-abbr { font-family: var(--font-mono); color: var(--primary); font-weight: bold; }
+
+    
+/* === OFFICIAL PERMIT (COMPACT CARD STYLE - 600px) === */
+.permit-viewport {
+    background: #525659;
+    padding: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; /* Biar nempel atas */
+    overflow-y: auto;
+}
+
+.permit-sheet {
+    /* UKURAN DISAMAKAN DENGAN FIC/ARREST CARD */
+    width: 600px;
+    min-height: auto; /* Tinggi menyesuaikan isi, tidak maksa A4 */
+    background: #fff;
+    color: #000;
+    font-family: 'Times New Roman', serif;
+    /* Padding Card Standar */
+    padding: 25px 30px;
+    position: relative;
+    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    border: 1px solid #ccc; /* Border halus biar tegas */
+}
+
+/* Watermark */
+.permit-watermark {
+    position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%) rotate(-45deg);
+    font-size: 4rem; /* Diperkecil */
+    font-weight: bold; color: rgba(0,0,0,0.04);
+    text-transform: uppercase; white-space: nowrap; pointer-events: none;
+    border: 5px solid rgba(0,0,0,0.04); padding: 10px;
+}
+
+/* KOP SURAT (Versi Compact) */
+.letter-head {
+    text-align: center;
+    border-bottom: 2px double #000; /* Garis lebih tipis */
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+    display: flex; align-items: center; justify-content: center; gap: 15px;
+}
+.letter-head img { width: 60px; height: 60px; } /* Logo diperkecil agar balance */
+.head-text h1 { font-size: 1.4rem; font-weight: 800; margin: 0; text-transform: uppercase; letter-spacing: 0.5px; line-height: 1; }
+.head-text h2 { font-size: 0.8rem; font-weight: bold; margin: 3px 0 0; text-transform: uppercase; color: #333; }
+.head-text p { font-size: 0.7rem; margin: 2px 0 0; font-style: italic; color: #555; }
+
+/* Judul & Ref */
+.letter-title {
+    text-align: center; font-size: 1.2rem; font-weight: bold;
+    text-decoration: underline; margin-bottom: 2px; text-transform: uppercase;
+}
+.letter-ref {
+    text-align: center; font-size: 0.8rem; color: #444;
+    margin-bottom: 15px; font-family: 'Arial', sans-serif;
+}
+
+/* Isi Surat (Padat) */
+.letter-body {
+    font-size: 0.95rem; /* Ukuran font pas baca di HP/PC */
+    line-height: 1.4;
+    text-align: justify;
+    color: #111;
+}
+.letter-body p { margin-bottom: 8px; }
+
+/* Tabel Info (Rapi & Rapat) */
+.info-table { width: 100%; margin: 10px 0; border-collapse: collapse; }
+.info-table td {
+    padding: 3px 0; /* Padding sangat minim */
+    vertical-align: top; font-size: 0.9rem;
+}
+.info-label { width: 140px; font-weight: bold; color: #333; }
+.info-sep { width: 15px; text-align: center; }
+.info-val { font-family: 'Courier Prime', monospace; font-weight: bold; color: #000; font-size: 0.95rem; }
+
+/* Event Box (Compact) */
+.event-box {
+    border: 1px dashed #444; /* Ganti solid jadi dashed biar beda */
+    padding: 10px;
+    margin: 10px 0;
+    background: #f8f9fa;
+    font-size: 0.85rem;
+}
+
+/* Footer & Tanda Tangan */
+.letter-footer {
+    margin-top: 25px; /* Jarak fix dari konten terakhir */
+    display: flex; justify-content: space-between; align-items: flex-end;
+    border-top: 1px solid #eee; /* Garis pemisah halus */
+    padding-top: 15px;
+}
+.sig-block { text-align: center; min-width: 180px; position: relative; }
+.sig-title { font-weight: bold; margin-bottom: 40px; display: block; font-size: 0.75rem; text-transform: uppercase; }
+.sig-name { font-weight: bold; text-decoration: underline; font-size: 0.95rem; display: block; }
+.sig-rank { font-size: 0.8rem; display: block; margin-top: 2px; color: #444; }
+
+/* Stempel (Adjusted Size) */
+.stamp-seal {
+    position: absolute; top: 15px; left: 10px;
+    border: 3px solid rgba(185, 28, 28, 0.7);
+    color: rgba(185, 28, 28, 0.7);
+    font-weight: 900; text-transform: uppercase;
+    padding: 4px 8px; transform: rotate(-12deg);
+    font-family: 'Courier New', monospace; font-size: 1rem;
+    border-radius: 4px; pointer-events: none; opacity: 0.8;
+}
+
+/* === LEGAL RECORDS SYSTEM (CGC & CMR) === */
+.rec-viewport {
+    background: #333; padding: 30px;
+    display: flex; justify-content: center; align-items: flex-start;
+    overflow-y: auto;
+}
+
+/* Base Card Style (600px Fixed) */
+.legal-card {
+    width: 600px; min-height: 400px;
+    background: #fff; color: #000;
+    position: relative; overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    display: flex; flex-direction: column;
+}
+
+/* --- CGC STYLING (ELEGANT) --- */
+.style-cgc { font-family: 'Times New Roman', serif; border: 10px solid #fff; outline: 2px solid #d4af37; }
+.cgc-bg {
+    position: absolute; top:0; left:0; width:100%; height:100%;
+    background-image: radial-gradient(#f9f5e3 5%, transparent 5%);
+    background-size: 20px 20px; opacity: 0.5; pointer-events: none;
+}
+.cgc-header { text-align: center; margin-top: 30px; position: relative; z-index: 1; }
+.cgc-header img { width: 70px; margin-bottom: 10px; }
+.cgc-title { font-size: 2rem; font-weight: bold; color: #d4af37; text-transform: uppercase; letter-spacing: 2px; text-shadow: 0 1px 0 rgba(0,0,0,0.2); }
+.cgc-sub { font-size: 0.9rem; font-style: italic; color: #555; margin-bottom: 20px; }
+
+.cgc-body { padding: 0 40px; text-align: center; position: relative; z-index: 1; flex: 1; display: flex; flex-direction: column; justify-content: center; }
+.cgc-text { font-size: 1.1rem; line-height: 1.6; margin-bottom: 20px; }
+.cgc-name { font-size: 1.8rem; font-weight: bold; font-family: 'Pinyon Script', cursive, serif; color: #000; margin: 10px 0; border-bottom: 1px solid #ccc; display: inline-block; min-width: 200px; }
+
+.cgc-meta { display: flex; justify-content: space-between; font-size: 0.8rem; border-top: 1px solid #d4af37; padding-top: 10px; margin-top: 30px; font-family: 'Arial', sans-serif; color: #444; }
+.cgc-seal { 
+    width: 80px; height: 80px; border: 3px double #d4af37; border-radius: 50%; 
+    display: flex; align-items: center; justify-content: center; text-align: center;
+    font-size: 0.6rem; font-weight: bold; color: #d4af37; text-transform: uppercase;
+    position: absolute; bottom: 40px; right: 40px; opacity: 0.8; transform: rotate(-10deg);
+}
+
+/* --- CMR STYLING (TECHNICAL) --- */
+.style-cmr { font-family: 'Arial', sans-serif; background: #f4f4f5; border-top: 5px solid #b91c1c; }
+.cmr-header { background: #fff; padding: 20px; border-bottom: 1px solid #ccc; display: flex; justify-content: space-between; align-items: center; }
+.cmr-brand h1 { font-size: 1.4rem; font-weight: 900; margin: 0; color: #b91c1c; letter-spacing: 1px; }
+.cmr-brand span { font-size: 0.7rem; color: #666; text-transform: uppercase; font-weight: bold; }
+.cmr-meta { text-align: right; font-family: 'Courier Prime', monospace; font-size: 0.75rem; color: #444; }
+
+.cmr-body { padding: 20px; }
+.cmr-section { background: #fff; border: 1px solid #ddd; padding: 15px; margin-bottom: 15px; position: relative; }
+.cmr-label { font-size: 0.65rem; color: #888; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; display: block; }
+.cmr-val { font-size: 0.95rem; font-weight: bold; color: #111; display: block; border-bottom: 1px dotted #ccc; padding-bottom: 2px; }
+
+.cmr-status-box { position: absolute; top: 15px; right: 15px; text-align: right; }
+.cmr-pill { display: inline-block; padding: 4px 10px; border-radius: 4px; color: #fff; font-weight: bold; font-size: 0.8rem; text-transform: uppercase; }
+.pill-green { background: #15803d; }
+.pill-yellow { background: #ca8a04; color: #000; }
+.pill-red { background: #b91c1c; }
+
+.cmr-stats-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 10px; }
+.cmr-stat { background: #f9fafb; border: 1px solid #eee; padding: 10px; text-align: center; }
+.cmr-stat big { display: block; font-family: 'Courier Prime', monospace; font-size: 1.4rem; font-weight: bold; }
+
+.cmr-footer { padding: 15px 20px; background: #fff; border-top: 1px solid #ddd; font-size: 0.7rem; color: #666; display: flex; justify-content: space-between; align-items: flex-end; }
+.cmr-disclaimer { font-style: italic; max-width: 70%; line-height: 1.3; }
+
+/* SHARED */
+.legal-sig { font-family: 'Great Vibes', cursive; font-size: 1.4rem; border-bottom: 1px solid #000; display: inline-block; min-width: 150px; }
+
+/* === MEDICAL CERTIFICATE SYSTEM === */
+/* Base Card Style (Re-using dimensions) */
+.style-med { 
+    font-family: 'Arial', sans-serif; 
+    background: #fff; 
+    border-top: 6px solid #ef4444; /* Medical Red Strip */
+    color: #1f2937;
+}
+
+.med-header {
+    padding: 20px;
+    border-bottom: 2px solid #fee2e2;
+    display: flex; justify-content: space-between; align-items: center;
+    background: #fef2f2; /* Light Red/Pink Tint */
+}
+.med-brand { display: flex; align-items: center; gap: 15px; }
+.med-brand i { font-size: 2.5rem; color: #ef4444; }
+.med-title h1 { font-size: 1.4rem; font-weight: 800; color: #b91c1c; margin: 0; letter-spacing: 0.5px; }
+.med-title span { font-size: 0.7rem; color: #7f1d1d; text-transform: uppercase; font-weight: bold; letter-spacing: 1px; }
+.med-meta { text-align: right; font-family: 'Courier Prime', monospace; font-size: 0.75rem; color: #991b1b; }
+
+.med-body { padding: 25px; position: relative; }
+/* Watermark Star of Life */
+.med-watermark {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    font-size: 10rem; color: rgba(239, 68, 68, 0.05); pointer-events: none; z-index: 0;
+}
+
+/* Patient Strip */
+.med-patient-strip {
+    display: flex; gap: 20px;
+    background: #f3f4f6; border-radius: 6px; padding: 15px;
+    margin-bottom: 20px; border-left: 4px solid #374151;
+    position: relative; z-index: 1;
+}
+.med-p-group { display: flex; flex-direction: column; }
+.med-label { font-size: 0.65rem; color: #6b7280; font-weight: bold; text-transform: uppercase; margin-bottom: 2px; }
+.med-val { font-size: 1rem; font-weight: bold; color: #111; }
+.med-blood { 
+    margin-left: auto; background: #fff; border: 2px solid #ef4444; 
+    color: #ef4444; padding: 5px 10px; border-radius: 4px; 
+    text-align: center; font-weight: 900;
+}
+
+/* Clinical Grid */
+.med-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; position: relative; z-index: 1; }
+.med-box { border: 1px solid #e5e7eb; padding: 10px; border-radius: 4px; }
+.med-head-sm { font-size: 0.75rem; font-weight: bold; color: #ef4444; border-bottom: 1px solid #fee2e2; padding-bottom: 5px; margin-bottom: 10px; display: block; }
+
+.med-check-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 0.85rem; font-weight: 600; }
+.med-res { font-size: 0.8rem; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
+.res-pass { background: #dcfce7; color: #166534; } /* Green */
+.res-fail { background: #fee2e2; color: #991b1b; } /* Red */
+.res-warn { background: #fef9c3; color: #854d0e; } /* Yellow */
+
+/* Diagnosis Area */
+.med-notes {
+    margin-top: 20px; font-family: 'Courier Prime', monospace; font-size: 0.85rem; 
+    background: #fff; border: 1px dashed #ccc; padding: 10px; min-height: 60px;
+    position: relative; z-index: 1;
+}
+
+/* Footer */
+.med-footer { 
+    margin-top: 25px; padding-top: 15px; border-top: 2px solid #f3f4f6; 
+    display: flex; justify-content: space-between; align-items: center; 
+    position: relative; z-index: 1;
+}
+.med-conclusion { 
+    font-size: 1.2rem; font-weight: 900; color: #15803d; 
+    border: 2px solid #15803d; padding: 5px 15px; transform: rotate(-2deg);
+    text-transform: uppercase;
+}
+.med-unfit { color: #b91c1c; border-color: #b91c1c; } /* Style kalau Unfit */
+
+.med-doc-sig { text-align: right; }
+.med-sig-img { font-family: 'Great Vibes', cursive; font-size: 1.2rem; display: block; }
+.med-doc-name { font-weight: bold; font-size: 0.85rem; border-top: 1px solid #ccc; display: block; margin-top: 2px; }
+
     </style>
 </head>
 <body>
@@ -294,12 +1233,24 @@
                 <span>MDT SERVICE FOR ROLEPLAY ONLY</span>
             </div>
         </div>
-
+         
+        <div class="widget-box">
+            <div class="widget-title">SHIFT DURATION</div>
+            <div id="patrolTimer">00:00:00</div>
+            <div class="widget-actions">
+                <button class="btn-mini" onclick="timerToggle()" id="tBtn"><i class="fas fa-play"></i></button>
+                <button class="btn-mini" onclick="timerReset()"><i class="fas fa-redo"></i></button>
+            </div>
+        </div>
         <div class="nav-label">COMMAND SYSTEM</div>
         <nav>
             <button onclick="nav('calc')" class="active" id="btn-calc"><i class="fas fa-gavel"></i> Sentencing Grid</button>
             <button onclick="nav('docs')" id="btn-docs"><i class="fas fa-file-contract"></i> Doc. Foundry</button>
+            <button onclick="nav('records')" id="btn-records"><i class="fas fa-file-certificate"></i> Legal Records (CGC/CMR)</button>
+            <button onclick="nav('permit')" id="btn-license"><i class="fas fa-id-card"></i> License Generator</button>
+            <button onclick="nav('medcert')" id="btn-medcert"><i class="fas fa-heartbeat"></i> Medical Certificate</button>
             <button onclick="nav('evidence')" id="btn-evidence"><i class="fas fa-fingerprint"></i> Evidence Mgr</button>
+            <button onclick="nav('roster')" id="btn-roster"><i class="fas fa-users"></i> Personnel Roster</button>
         </nav>
         
         <div class="nav-label">FIELD OPS & TOOLS</div>
@@ -309,6 +1260,8 @@
             <button onclick="nav('radio')" id="btn-radio"><i class="fas fa-walkie-talkie"></i> Radio Builder</button>
             <button onclick="nav('sop')" id="btn-sop"><i class="fas fa-book-open"></i> Constitution</button>
             <button onclick="nav('notes')" id="btn-notes"><i class="fas fa-sticky-note"></i> Officer Notes</button>
+            <button onclick="nav('guide')" id="btn-guide"><i class="fas fa-book-medical"></i> FIELD GUIDE & SCRIPTS</button>
+            <button onclick="nav('tactical')" id="btn-tactical"><i class="fas fa-chess-board"></i> TACTICAL BOARD</button>
         </nav>
 
         <div class="nav-label">UTILITIES</div>
@@ -316,16 +1269,31 @@
             <button onclick="nav('phonetic')" id="btn-phonetic"><i class="fas fa-bullhorn"></i> Phonetic Decoder</button>
             <button onclick="nav('codex')" id="btn-codex"><i class="fas fa-book-journal-whills"></i> Codex Archive</button>
         </nav>
+        
+        <div class="nav-label">VISUAL & DETECTIVE</div>
+<nav>
+    <button onclick="nav('vis-record')"><i class="fas fa-id-card"></i> Criminal Record</button>
+    <button onclick="nav('vis-duty')"><i class="fas fa-clipboard-check"></i> Duty Report</button>
+    <button onclick="nav('vis-bolo')"><i class="fas fa-skull"></i> BOLO Generator</button>
+    <button onclick="nav('detective')" id="btn-detective"><i class="fas fa-project-diagram"></i> Evidence Map</button> 
 
-        <div class="widget-box">
-            <div class="widget-title">SHIFT DURATION</div>
-            <div id="patrolTimer">00:00:00</div>
-            <div class="widget-actions">
-                <button class="btn-mini" onclick="timerToggle()" id="tBtn"><i class="fas fa-play"></i></button>
-                <button class="btn-mini" onclick="timerReset()"><i class="fas fa-redo"></i></button>
-            </div>
-        </div>
+        <div class="nav-label">External Tools TOOLS</div>
+    <button onclick="nav('discord')" id="btn-discord"><i class="fab fa-discord"></i> Discord Composer</button>
+    <button onclick="nav('treasury')" id="btn-treasury"><i class="fas fa-coins"></i> Treasury Calc</button>
+    <button onclick="nav('court')"><i class="fas fa-gavel"></i> Statement Generator</button>
+    <button onclick="nav('award')"><i class="fas fa-medal"></i> Officer Awards</button>
+</nav>
+<div class="nav-label">DATABASE & LOGS</div>
+<nav>
+    <button onclick="nav('identity')" id="btn-identity"><i class="fas fa-user-tag"></i> Identity Check</button>
+    <button onclick="nav('vehicle')" id="btn-vehicle"><i class="fas fa-car-side"></i> Vehicle Check</button>
+    <button onclick="nav('fic')" id="btn-fic"><i class="fas fa-address-card"></i> Field Interview (FIC)</button>
+    <button onclick="nav('idgen')" id="btn-idgen"><i class="fas fa-id-badge"></i> Officer ID Card</button>
+</nav>
+
     </aside>
+
+    
 
     <main>
         
@@ -591,6 +1559,1437 @@
             </div>
         </section>
 
+
+<section id="detective" class="view">
+    <div class="panel-head">
+        <h2><i class="fas fa-project-diagram"></i> EVIDENCE MAP</h2>
+        <span class="badge">DRAG & CONNECT</span>
+    </div>
+    <div class="panel full-h" style="padding:0; display:flex; flex-direction:column;">
+        <div style="padding:10px; background:#111; border-bottom:1px solid #333; display:flex; gap:10px;">
+            <button class="btn-mini" onclick="addNode('suspect')"><i class="fas fa-user-secret"></i> ADD SUSPECT</button>
+            <button class="btn-mini" onclick="addNode('evidence')"><i class="fas fa-gun"></i> ADD EVIDENCE</button>
+            <button class="btn-mini" onclick="addNode('note')"><i class="fas fa-sticky-note"></i> ADD NOTE</button>
+            <div style="flex:1"></div>
+            <button class="btn-mini" onclick="clearMap()" style="color:red"><i class="fas fa-trash"></i> CLEAR</button>
+            <small style="align-self:center; color:#666; margin-right:10px;">*Double Click to Delete Item. Drag to Move.</small>
+        </div>
+        <div id="map-container" style="flex:1; background-color:#1a1a1d; background-image:radial-gradient(#333 1px, transparent 1px); background-size:20px 20px; position:relative; overflow:hidden;">
+            <canvas id="mapCanvas" style="position:absolute; top:0; left:0; pointer-events:none;"></canvas>
+            </div>
+    </div>
+</section>
+
+<section id="discord" class="view">
+    <div class="panel-head"><h2><i class="fab fa-discord"></i> DISCORD COMPOSER</h2></div>
+    <div class="grid-split">
+        <div class="panel full-h scroll-y">
+            <div class="input-group"><label>TITLE / HEADER</label><input type="text" id="dcTitle" placeholder="e.g. ARREST REPORT" oninput="genDiscord()"></div>
+            <div class="flex-row">
+                <div class="input-group"><label>OFFICER</label><input type="text" id="dcOfficer" oninput="genDiscord()"></div>
+                <div class="input-group"><label>DATE/TIME</label><input type="text" id="dcDate" value="19/12/2025" oninput="genDiscord()"></div>
+            </div>
+            <div class="input-group"><label>SUSPECT / SUBJECT</label><input type="text" id="dcSuspect" oninput="genDiscord()"></div>
+            <div class="input-group"><label>DETAILS / NARRATIVE</label><textarea id="dcBody" rows="6" oninput="genDiscord()"></textarea></div>
+            <div class="input-group"><label>EVIDENCE (LINKS)</label><input type="text" id="dcEvid" placeholder="imgur.com/..." oninput="genDiscord()"></div>
+        </div>
+        <div class="panel full-h" style="background:#36393f; padding:20px; border:none;">
+            <label style="color:#b9bbbe; font-size:0.8rem; font-weight:bold;">PREVIEW (READY TO COPY)</label>
+            <textarea id="dcOutput" style="width:100%; height:300px; background:#2f3136; border:none; color:#dcddde; font-family:'Whitney', sans-serif; padding:15px; margin-top:10px; border-radius:5px;" readonly></textarea>
+            <button class="copy-btn" onclick="copyToClip('dcOutput')" style="background:#5865F2; margin-top:15px;">COPY MARKDOWN</button>
+        </div>
+    </div>
+</section>
+
+<section id="treasury" class="view">
+    <div class="panel-head"><h2><i class="fas fa-coins"></i> TREASURY</h2></div>
+    <div class="grid-split">
+        <div class="panel full-h scroll-y">
+            <h3 style="color:var(--accent); margin-bottom:15px;">FINE SPLITTER</h3>
+            <div class="input-group"><label>TOTAL TICKET AMOUNT ($)</label><input type="number" id="trAmount" oninput="calcTreasury()"></div>
+            <div class="input-group"><label>GOVERNMENT CUT (%)</label><input type="number" id="trCut" value="50" oninput="calcTreasury()"></div>
+            <div class="summary-box">
+                <div class="stat-flex">
+                    <div class="stat-unit"><small>OFFICER KEEPS</small><strong id="outKeep" style="color:#fff">$0</strong></div>
+                    <div class="stat-unit"><small>DEPOSIT TO GOV</small><strong id="outDepo" style="color:var(--warning)">$0</strong></div>
+                </div>
+            </div>
+        </div>
+        <div class="panel full-h scroll-y">
+            <h3 style="color:var(--success); margin-bottom:15px;">PAYCHECK ESTIMATOR</h3>
+            <div class="input-group"><label>MINUTES ON DUTY</label><input type="number" id="trMins" oninput="calcTreasury()"></div>
+            <div class="input-group"><label>SALARY PER PAYCHECK ($)</label><input type="number" id="trRate" value="250" placeholder="e.g. 250"></div>
+            <div class="summary-box">
+                <div class="stat-flex">
+                    <div class="stat-unit"><small>ESTIMATED PAY</small><strong id="outSal" style="color:var(--success)">$0</strong></div>
+                </div>
+                <small style="color:#666; display:block; text-align:center;">*Based on standard 1-hour paychecks</small>
+            </div>
+        </div>
+    </div>
+</section>
+
+        <section id="tactical" class="view">
+    <div class="panel-head">
+        <h2><i class="fas fa-chess-board"></i> TACTICAL PLANNING</h2>
+        <span class="badge" style="background:#fff; color:#000;">DRAWING MODE</span>
+    </div>
+
+    <div class="panel full-h" style="padding:0; overflow:hidden; display:flex; flex-direction:column;">
+        <div style="padding:10px; background:#111; border-bottom:1px solid #333; display:flex; gap:10px; align-items:center;">
+            <label style="color:#888; font-size:0.8rem; font-weight:bold;">COLOR:</label>
+            <div class="color-btn active" style="background:#fff;" onclick="setPen('white', this)"></div>
+            <div class="color-btn" style="background:#ef4444;" onclick="setPen('#ef4444', this)"></div> <div class="color-btn" style="background:#3b82f6;" onclick="setPen('#3b82f6', this)"></div> <div class="color-btn" style="background:#10b981;" onclick="setPen('#10b981', this)"></div> <div style="width:1px; height:20px; background:#333; margin:0 10px;"></div>
+
+            <button class="btn-mini" onclick="clearBoard()" title="Clear Board"><i class="fas fa-trash"></i></button>
+            <button class="btn-mini" onclick="dlTactical()" title="Save Image"><i class="fas fa-camera"></i></button>
+            
+            <div style="margin-left:auto; font-size:0.7rem; color:#666;">
+                DRAG TO DRAW • USE FOR RAID PLANNING
+            </div>
+        </div>
+
+        <div style="flex:1; background:#1a1a1d; position:relative; cursor:crosshair; overflow:hidden;" id="canvas-wrap">
+            <div style="position:absolute; top:0; left:0; width:100%; height:100%; background-image: linear-gradient(#333 1px, transparent 1px), linear-gradient(90deg, #333 1px, transparent 1px); background-size: 40px 40px; opacity:0.3; pointer-events:none;"></div>
+            
+            <canvas id="tacCanvas"></canvas>
+        </div>
+    </div>
+</section>
+    
+       <section id="guide" class="view">
+    <div class="panel-head">
+        <h2><i class="fas fa-book-medical"></i> FIELD GUIDE & SCRIPTS</h2>
+        <span class="badge" style="background:var(--primary); color:#fff;">V6.2 EXTENDED</span>
+    </div>
+
+    <div class="grid-split">
+        <div class="panel full-h scroll-y" style="flex:0 0 260px;">
+            <div class="nav-label" style="margin-top:0">BASICS</div>
+            <button class="btn-guide active" onclick="swG('scripts')"><i class="fas fa-comment"></i> Mandatory Scripts</button>
+            <button class="btn-guide" onclick="swG('traffic')"><i class="fas fa-car"></i> Traffic Stop (10-55)</button>
+            <button class="btn-guide" onclick="swG('felony')"><i class="fas fa-exclamation-circle"></i> Felony Stop (High Risk)</button>
+            
+            <div class="nav-label">PROCEDURES</div>
+            <button class="btn-guide" onclick="swG('arrest')"><i class="fas fa-hand-holding"></i> Arrest & Booking</button>
+            <button class="btn-guide" onclick="swG('medical')"><i class="fas fa-heartbeat"></i> Medical / BLS</button>
+            <button class="btn-guide" onclick="swG('search')"><i class="fas fa-search"></i> Search & Seizure</button>
+            
+            <div class="nav-label">TACTICAL</div>
+            <button class="btn-guide" onclick="swG('combat')"><i class="fas fa-crosshairs"></i> Combat Rules (ROE)</button>
+            <button class="btn-guide" onclick="swG('radio')"><i class="fas fa-microphone"></i> Radio Etiquette</button>
+            
+            <div class="nav-label">SPECIAL UNITS</div>
+            <button class="btn-guide" onclick="swG('k9')"><i class="fas fa-dog"></i> K-9 Unit Ops</button>
+            <button class="btn-guide" onclick="swG('air')"><i class="fas fa-helicopter"></i> Air Support (ASD)</button>
+            <button class="btn-guide" onclick="swG('negotiation')"><i class="fas fa-handshake"></i> Hostage Negotiation</button>
+            
+            <div class="nav-label">LEGAL</div>
+            <button class="btn-guide" onclick="swG('court')"><i class="fas fa-gavel"></i> Courtroom RP</button>
+        </div>
+
+        <div class="panel full-h scroll-y" style="background:#111;">
+            
+            <div id="g-scripts" class="g-content">
+                <h3 class="gh">MIRANDA RIGHTS (HAK TERSANGKA)</h3>
+                <p class="gd">Wajib dibaca SAAT MEMBORGOL tersangka.</p>
+                <div class="script-card">
+                    <p>"Kamu punya hak untuk diam. Apapun yang kamu katakan bisa dan akan digunakan melawanmu di pengadilan."</p>
+                    <button class="btn-mini" onclick="copyText(this.previousElementSibling.innerText)"><i class="fas fa-copy"></i></button>
+                </div>
+                <div class="script-card">
+                    <p>"Kamu punya hak atas pengacara. Jika tidak mampu, negara akan menyediakannya untukmu."</p>
+                    <button class="btn-mini" onclick="copyText(this.previousElementSibling.innerText)"><i class="fas fa-copy"></i></button>
+                </div>
+                <div class="script-card">
+                    <p>"Apakah kamu mengerti hak-hak yang baru saja saya bacakan?"</p>
+                    <button class="btn-mini" onclick="copyText(this.previousElementSibling.innerText)"><i class="fas fa-copy"></i></button>
+                </div>
+            </div>
+
+            <div id="g-traffic" class="g-content hidden">
+                <h3 class="gh" style="color:var(--warning)">TRAFFIC STOP (10-55)</h3>
+                <div class="step-box">
+                    <span class="step-n">1</span>
+                    <div class="step-d">
+                        <strong>MEGAPHONE</strong>
+                        <div class="cmd">/m SAPD! Harap menepi ke kanan dan matikan mesin kendaraan!</div>
+                        <div class="cmd">/m Tetap di dalam kendaraan dan letakkan tangan di setir/dashboard!</div>
+                    </div>
+                </div>
+                <div class="step-box">
+                    <span class="step-n">2</span>
+                    <div class="step-d">
+                        <strong>PENDEKATAN (TOUCH TAIL LIGHT)</strong>
+                        <div class="cmd">/me menyentuh lampu belakang kendaraan untuk meninggalkan sidik jari.</div>
+                        <div class="cmd">/me mengetuk kaca jendela pengemudi dengan sopan.</div>
+                    </div>
+                </div>
+                <div class="step-box">
+                    <span class="step-n">3</span>
+                    <div class="step-d">
+                        <strong>DIALOG AWAL</strong>
+                        <div class="cmd">"Selamat siang/malam, Pak/Bu. Saya Officer [Nama]."</div>
+                        <div class="cmd">"Tahu alasan saya memberhentikan kendaraan Anda?"</div>
+                        <div class="cmd">"Bisa tolong tunjukkan SIM dan STNK?"</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="g-felony" class="g-content hidden">
+                <h3 class="gh" style="color:var(--danger)">FELONY STOP (HIGH RISK)</h3>
+                <p class="gd">Gunakan untuk kendaraan curian atau suspect bersenjata. JANGAN MENDEKAT!</p>
+                <div class="script-card red">
+                    <p>/m MATIKAN MESIN! BUANG KUNCI KELUAR JENDELA! TANGAN KELUAR!</p>
+                </div>
+                <div class="script-card red">
+                    <p>/m PENGEMUDI! BUKA PINTU DARI LUAR, KELUAR DENGAN TANGAN DI ATAS!</p>
+                </div>
+                <div class="script-card red">
+                    <p>/m BERPUTAR MEMBELAKANGI SAYA! JALAN MUNDUR PERLAHAN KE ARAH SUARA SAYA!</p>
+                </div>
+                <div class="script-card red">
+                    <p>/m BERLUTUT! SILANGKAN KAKI! TANGAN DI ATAS KEPALA! JANGAN BERGERAK!</p>
+                </div>
+            </div>
+
+            <div id="g-arrest" class="g-content hidden">
+                <h3 class="gh">ARREST & PROCESSING</h3>
+                <div class="step-box">
+                    <span class="step-n">1</span>
+                    <div class="step-d">
+                        <strong>CUFF & FRISK (BORGOL & GELEDAH)</strong>
+                        <div class="cmd">/me memutar tubuh suspect dan menahan kedua tangannya.</div>
+                        <div class="cmd">/me mengambil borgol dari sabuk dan menguncinya di pergelangan tangan suspect.</div>
+                        <div class="cmd">/me melakukan pat-down (tepukan) dari bahu hingga kaki untuk mencari senjata.</div>
+                        <div class="cmd">/do Adakah benda berbahaya/ilegal yang ditemukan?</div>
+                    </div>
+                </div>
+                <div class="step-box">
+                    <span class="step-n">2</span>
+                    <div class="step-d">
+                        <strong>MEMASUKKAN KE CRUISER</strong>
+                        <div class="cmd">/me membuka pintu belakang cruiser dan menekan kepala suspect agar tidak terbentur.</div>
+                        <div class="cmd">/me memasang sabuk pengaman pada suspect.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="g-medical" class="g-content hidden">
+                <h3 class="gh" style="color:var(--success)">BASIC LIFE SUPPORT (BLS)</h3>
+                <div class="step-box">
+                    <span class="step-n">1</span>
+                    <div class="step-d">
+                        <strong>CHECK RESPONSIVENESS</strong>
+                        <div class="cmd">/me menepuk pundak korban dengan keras. "PAK? BISA DENGAR SAYA?"</div>
+                        <div class="cmd">/me memeriksa nadi karotis (leher) dan pernafasan.</div>
+                    </div>
+                </div>
+                <div class="step-box">
+                    <span class="step-n">2</span>
+                    <div class="step-d">
+                        <strong>CPR (RESUSITASI JANTUNG)</strong>
+                        <div class="cmd">/me menautkan jari di tengah dada korban.</div>
+                        <div class="cmd">/me melakukan kompresi dada ritme 30:2 secara konstan.</div>
+                    </div>
+                </div>
+                <div class="step-box">
+                    <span class="step-n">3</span>
+                    <div class="step-d">
+                        <strong>GUNSHOT WOUND (LUKA TEMBAK)</strong>
+                        <div class="cmd">/me menggunting pakaian di sekitar luka tembak.</div>
+                        <div class="cmd">/me menekan luka dengan kain kasa (Direct Pressure) untuk stop pendarahan.</div>
+                        <div class="cmd">/me memasang Tourniquet di bagian atas luka.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="g-search" class="g-content hidden">
+                <h3 class="gh">SEARCH PROCEDURES</h3>
+                <p class="gd">Prosedur penggeledahan kendaraan/properti.</p>
+                <div class="script-card">
+                    <strong>PROBABLE CAUSE (SEBAB AKIBAT)</strong>
+                    <p>"Saya mencium bau mariyuana/alkohol dari dalam mobil. Saya akan melakukan penggeledahan."</p>
+                </div>
+                <div class="step-box">
+                    <div class="step-d">
+                        <strong>CAR SEARCH RP</strong>
+                        <div class="cmd">/me mengenakan sarung tangan lateks.</div>
+                        <div class="cmd">/me membuka pintu mobil dan memeriksa bagian dashboard, bawah jok, dan laci.</div>
+                        <div class="cmd">/me membuka bagasi dan memeriksa isinya secara menyeluruh.</div>
+                        <div class="cmd">/do Adakah barang ilegal ditemukan?</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="g-combat" class="g-content hidden">
+                <h3 class="gh" style="color:var(--danger)">COMBAT RULES (ROE)</h3>
+                <div class="warning-box">
+                    GUNAKAN "ESCALATION OF FORCE" (Bertahap). Jangan langsung menembak mati.
+                </div>
+                <ul>
+                    <li><strong>Level 1:</strong> Kehadiran Petugas (Visual)</li>
+                    <li><strong>Level 2:</strong> Perintah Verbal (Megaphone)</li>
+                    <li><strong>Level 3:</strong> Tangan Kosong (Soft Control)</li>
+                    <li><strong>Level 4:</strong> Non-Lethal (Tazer/Baton)</li>
+                    <li><strong>Level 5:</strong> Lethal Force (Senjata Api) - HANYA JIKA NYAWA TERANCAM.</li>
+                </ul>
+                <div class="step-box">
+                    <div class="step-d">
+                        <strong>RELOADING RP</strong>
+                        <div class="cmd">/me mengambil magazine baru dari tactical vest.</div>
+                        <div class="cmd">/me menekan release button, membuang mag kosong, memasukkan mag baru.</div>
+                        <div class="cmd">/me mengokang slide senjata. Siap tembak.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="g-radio" class="g-content hidden">
+                <h3 class="gh">RADIO PROTOCOLS</h3>
+                <div class="script-card">
+                    <strong>MEMULAI PATROLI</strong>
+                    <p>"1-LINCOLN-1, 10-41, 10-8 from PD HQ. Available for calls."</p>
+                </div>
+                <div class="script-card">
+                    <strong>TRAFFIC STOP</strong>
+                    <p>"1-L-1, 10-55 on a [Warna/Mobil] at [Lokasi]. Occupied x1. Code 2."</p>
+                </div>
+                <div class="script-card">
+                    <strong>PURSUIT (KEJAR-KEJARAN)</strong>
+                    <p>"1-L-1, 10-80! [Warna/Mobil], heading [Arah Mata Angin] on [Nama Jalan]! Speed [Kecepatan]! Requesting Backup!"</p>
+                </div>
+            </div>
+
+            <div id="g-k9" class="g-content hidden">
+                <h3 class="gh" style="color:#d97706">K-9 UNIT OPERATIONS</h3>
+                <div class="step-box">
+                    <span class="step-n"><i class="fas fa-dog"></i></span>
+                    <div class="step-d">
+                        <strong>DEPLOYING DOG</strong>
+                        <div class="cmd">/me membuka pintu belakang K9 unit.</div>
+                        <div class="cmd">/me memberi isyarat tangan pada anjing untuk keluar (Heel).</div>
+                    </div>
+                </div>
+                <div class="step-box">
+                    <div class="step-d">
+                        <strong>SNIFF SEARCH (MENCARI NARKOBA)</strong>
+                        <div class="cmd">/me menepuk sisi kendaraan suspect. "SEARCH!"</div>
+                        <div class="cmd">/do Anjing mengendus sekeliling kendaraan...</div>
+                        <div class="cmd">/do Apakah anjing mendeteksi bau narkotika/bubuk mesiu?</div>
+                    </div>
+                </div>
+                <div class="step-box">
+                    <div class="step-d">
+                        <strong>ATTACK COMMAND</strong>
+                        <div class="cmd">"POLISI K-9! MENYERAH ATAU ANJING SAYA AKAN MENYERANG!"</div>
+                        <div class="cmd">/me melepas tali kekang. "FASS! (Attack!)"</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="g-air" class="g-content hidden">
+                <h3 class="gh" style="color:#0ea5e9">AIR SUPPORT DIVISION (ASD)</h3>
+                <div class="script-card">
+                    <strong>TAKEOFF</strong>
+                    <p>"AIR-1, lifting off from HQ. 10-8 over the city. Monitoring frequency."</p>
+                </div>
+                <div class="script-card">
+                    <strong>PURSUIT COMMENTARY (MATA ELANG)</strong>
+                    <p>"AIR-1 has visual. Suspect is heading Northbound on Main St. Light traffic. Ground units, take secondary."</p>
+                </div>
+                <div class="step-box">
+                    <div class="step-d">
+                        <strong>THERMAL CAM / SPOTLIGHT</strong>
+                        <div class="cmd">/me mengaktifkan kamera termal (FLIR) untuk mencari panas tubuh.</div>
+                        <div class="cmd">/me menyalakan lampu sorot (Nightsun) ke arah target di bawah.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="g-negotiation" class="g-content hidden">
+                <h3 class="gh">HOSTAGE NEGOTIATION</h3>
+                <p class="gd">Gunakan saat perampokan bank/toko dengan sandera.</p>
+                <div class="script-card">
+                    <strong>OPENING</strong>
+                    <p>"Ini Detektif [Nama] dari SAPD. Saya di sini untuk memastikan semua orang keluar dengan selamat. Bisa saya bicara dengan pemimpin di sana?"</p>
+                </div>
+                <div class="script-card">
+                    <strong>ASKING PROOF OF LIFE</strong>
+                    <p>"Sebelum kita bicara tuntutan, saya perlu bukti bahwa sandera masih hidup dan sehat. Bawa mereka ke depan pintu/jendela."</p>
+                </div>
+                <div class="script-card">
+                    <strong>NO FREE PASSAGE</strong>
+                    <p>"Saya tidak bisa menarik mundur semua unit, tapi saya bisa menjamin tidak ada yang masuk jika kalian kooperatif."</p>
+                </div>
+            </div>
+
+            <div id="g-court" class="g-content hidden">
+                <h3 class="gh">COURTROOM PROCEDURES</h3>
+                <div class="step-box">
+                    <div class="step-d">
+                        <strong>ADDRESSING JUDGE (HAKIM)</strong>
+                        <p>Selalu panggil hakim dengan "Your Honor" (Yang Mulia).</p>
+                    </div>
+                </div>
+                <div class="step-box">
+                    <div class="step-d">
+                        <strong>SWEARING IN (SUMPAH)</strong>
+                        <div class="cmd">"I do." (Saya bersedia).</div>
+                        <div class="cmd">"Saya bersumpah untuk mengatakan yang sejujurnya, seluruh kebenaran, dan tidak lain selain kebenaran."</div>
+                    </div>
+                </div>
+                <div class="step-box">
+                    <div class="step-d">
+                        <strong>PRESENTING EVIDENCE</strong>
+                        <div class="cmd">"Your Honor, izin menyerahkan bukti 'Exhibit A' berupa rekaman Dashcam kejadian."</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+                
+</section>
+
+<section id="vis-record" class="view">
+    <div class="panel-head"><h2><i class="fas fa-file-contract"></i> CRIMINAL RECORD</h2></div>
+    <div class="grid-split">
+        <div class="panel full-h scroll-y">
+            <h4 style="color:var(--primary); margin-bottom:10px;">A. IDENTITAS SUBJEK</h4>
+            <div class="input-group"><label>FULL NAME</label><input type="text" id="crName" oninput="uCR()"></div>
+            <div class="flex-row">
+                <div class="input-group"><label>DOB / AGE</label><input type="text" id="crDob" oninput="uCR()"></div>
+                <div class="input-group"><label>GENDER</label><input type="text" id="crGen" oninput="uCR()"></div>
+            </div>
+            <div class="input-group"><label>ADDRESS</label><input type="text" id="crAddr" oninput="uCR()"></div>
+            <div class="input-group"><label>MUGSHOT URL</label><input type="text" id="crImg" oninput="uCR()"></div>
+
+            <h4 style="color:var(--primary); margin:15px 0 10px;">B. CASE INFO & CHARGES</h4>
+            <div class="input-group"><label>OFFICER</label><input type="text" id="crOff" oninput="uCR()"></div>
+            <div class="input-group"><label>CHARGES (LIST)</label><textarea id="crChg" rows="4" placeholder="- [PC 101] Murder (Felony)" oninput="uCR()"></textarea></div>
+            <div class="input-group"><label>NARRATIVE</label><textarea id="crDesc" rows="4" placeholder="Kronologi kejadian..." oninput="uCR()"></textarea></div>
+
+            <h4 style="color:var(--primary); margin:15px 0 10px;">C. LEGAL OUTCOME</h4>
+            <div class="flex-row">
+                <div class="input-group"><label>TIME (MONTHS)</label><input type="text" id="crTime" oninput="uCR()"></div>
+                <div class="input-group"><label>FINE ($)</label><input type="text" id="crFine" oninput="uCR()"></div>
+            </div>
+            <div class="input-group"><label>STATUS</label><input type="text" id="crStat" value="PROCESSED" oninput="uCR()"></div>
+            
+            <button class="btn-action" onclick="dlImg('cr-canvas', 'CriminalRecord')">EXPORT DOCUMENT</button>
+        </div>
+
+        <div class="preview-stage">
+            <div id="cr-canvas" class="doc-sheet">
+                <div class="ds-header">
+                    <div class="ds-brand">
+                        <h1>ARREST REPORT</h1>
+                        <span>SAN ANDREAS POLICE DEPARTMENT</span>
+                    </div>
+                    <div class="ds-meta">
+                        CASE ID: <span id="p-crCase">#2025-XXXX</span><br>
+                        DATE: <span id="p-crDate">...</span>
+                    </div>
+                </div>
+
+                <img src="" id="p-crImg" class="mugshot-box" onerror="this.style.display='none'">
+
+                <div class="ds-section" style="width: 70%;">
+                    <div class="ds-title">A. SUBJECT IDENTITY</div>
+                    <div class="ds-grid-2">
+                        <div class="ds-field"><label>FULL NAME</label><span id="p-crName">...</span></div>
+                        <div class="ds-field"><label>DOB / AGE</label><span id="p-crDob">...</span></div>
+                        <div class="ds-field"><label>GENDER</label><span id="p-crGen">...</span></div>
+                        <div class="ds-field"><label>NATIONALITY</label><span>SAN ANDREAS</span></div>
+                    </div>
+                    <div class="ds-field"><label>RESIDENTIAL ADDRESS</label><span id="p-crAddr">...</span></div>
+                </div>
+
+                <div class="ds-section">
+                    <div class="ds-title">B. CHARGES & VIOLATIONS</div>
+                    <div class="cr-charges" id="p-crChg">...</div>
+                </div>
+
+                <div class="ds-section">
+                    <div class="ds-title">C. CASE DESCRIPTION</div>
+                    <div class="ds-field"><span id="p-crDesc" style="font-weight:400; font-size:0.85rem; line-height:1.4;">...</span></div>
+                </div>
+
+                <div class="ds-section">
+                    <div class="ds-title">D. LEGAL OUTCOME</div>
+                    <div class="ds-grid-3">
+                        <div class="ds-field"><label>JAIL TIME</label><span id="p-crTime">...</span></div>
+                        <div class="ds-field"><label>TOTAL FINE</label><span id="p-crFine">...</span></div>
+                        <div class="ds-field"><label>STATUS</label><span style="color:var(--success)" id="p-crStat">...</span></div>
+                    </div>
+                </div>
+
+                <div class="ds-section" style="margin-top:auto; border-top:2px solid #333; padding-top:10px;">
+                    <div class="ds-grid-2">
+                        <div class="ds-field"><label>ARRESTING OFFICER</label><span id="p-crOff">...</span></div>
+                        <div class="ds-field"><label>SUPERVISOR SIGNATURE</label><span>_________________</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="vis-duty" class="view">
+    <div class="panel-head"><h2><i class="fas fa-clipboard-list"></i> DUTY REPORT GEN</h2></div>
+    <div class="grid-split">
+        <div class="panel full-h scroll-y">
+            <h4 style="color:var(--accent);">A. IDENTITAS PETUGAS</h4>
+            <div class="input-group"><label>OFFICER NAME</label><input type="text" id="drName" oninput="uDR()"></div>
+            <div class="input-group"><label>RANK / BADGE</label><input type="text" id="drRank" oninput="uDR()"></div>
+            <div class="input-group"><label>SHIFT START</label><input type="text" id="drStart" placeholder="10:00" oninput="uDR()"></div>
+            <div class="input-group"><label>SHIFT END</label><input type="text" id="drEnd" placeholder="14:00" oninput="uDR()"></div>
+
+            <h4 style="color:var(--accent);">B. AKTIVITAS & STATS</h4>
+            <div class="flex-row">
+                <div class="input-group"><label>ARRESTS</label><input type="number" id="drArr" value="0" oninput="uDR()"></div>
+                <div class="input-group"><label>TICKETS</label><input type="number" id="drTic" value="0" oninput="uDR()"></div>
+                <div class="input-group"><label>TOTAL FINE ($)</label><input type="number" id="drFine" value="0" oninput="uDR()"></div>
+            </div>
+            <div class="input-group"><label>PATROL TYPE</label><input type="text" id="drType" placeholder="Vehicle / ADAM Unit" oninput="uDR()"></div>
+            <div class="input-group"><label>MAIN LOCATION</label><input type="text" id="drLoc" placeholder="Los Santos Area" oninput="uDR()"></div>
+            
+            <div class="input-group"><label>CHRONOLOGY / LOG</label><textarea id="drLog" rows="5" oninput="uDR()"></textarea></div>
+
+            <button class="btn-action" onclick="dlImg('dr-canvas', 'DutyReport')">EXPORT REPORT</button>
+        </div>
+
+        <div class="preview-stage">
+            <div id="dr-canvas" class="doc-sheet" style="border-top: 5px solid var(--accent);">
+                <div class="ds-header">
+                    <div class="ds-brand">
+                        <h1>OFFICIAL DUTY REPORT</h1>
+                        <span style="color:var(--accent)">PATROL DIVISION LOG</span>
+                    </div>
+                    <div class="ds-meta" id="p-drDate">DATE: ...</div>
+                </div>
+
+                <div class="ds-section">
+                    <div class="ds-title" style="border-left-color:var(--accent)">A. OFFICER DETAILS</div>
+                    <div class="ds-grid-2">
+                        <div class="ds-field"><label>NAME</label><span id="p-drName">...</span></div>
+                        <div class="ds-field"><label>RANK / BADGE</label><span id="p-drRank">...</span></div>
+                        <div class="ds-field"><label>UNIT / DEPT</label><span>PATROL / SAPD</span></div>
+                        <div class="ds-field"><label>SHIFT TIME</label><span id="p-drShift">...</span></div>
+                    </div>
+                </div>
+
+                <div class="dr-stats">
+                    <div class="dr-stat-card"><h3><i class="fas fa-handcuffs"></i> <span id="p-drArr" style="font-size:1.5rem; color:#fff">0</span></h3><span>ARRESTS</span></div>
+                    <div class="dr-stat-card"><h3><i class="fas fa-receipt"></i> <span id="p-drTic" style="font-size:1.5rem; color:#fff">0</span></h3><span>TICKETS</span></div>
+                    <div class="dr-stat-card"><h3><i class="fas fa-dollar-sign"></i> <span id="p-drFine" style="font-size:1.5rem; color:#fff">0</span></h3><span>TOTAL FINES</span></div>
+                </div>
+
+                <div class="ds-section">
+                    <div class="ds-title" style="border-left-color:var(--accent)">B. PATROL ACTIVITY</div>
+                    <div class="ds-grid-2">
+                        <div class="ds-field"><label>PATROL TYPE</label><span id="p-drType">...</span></div>
+                        <div class="ds-field"><label>MAIN LOCATION</label><span id="p-drLoc">...</span></div>
+                    </div>
+                </div>
+
+                <div class="ds-section">
+                    <div class="ds-title" style="border-left-color:var(--accent)">C. CHRONOLOGY OF EVENTS</div>
+                    <div class="dr-log" id="p-drLog">...</div>
+                </div>
+
+                <div class="ds-section" style="margin-top:auto; padding-top:20px; border-top:1px solid #333; text-align:center;">
+                    <p style="font-size:0.7rem; color:#666;">I HEREBY CERTIFY THAT THE INFORMATION CONTAINED HEREIN IS TRUE AND CORRECT.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="vis-bolo" class="view">
+    <div class="panel-head"><h2><i class="fas fa-skull"></i> BOLO GENERATOR</h2></div>
+    <div class="grid-split">
+        <div class="panel full-h scroll-y">
+            <div class="input-group"><label>TARGET NAME</label><input type="text" id="wpName" oninput="uWP()"></div>
+            <div class="input-group"><label>ALIAS / NICKNAME</label><input type="text" id="wpAlias" oninput="uWP()"></div>
+            <div class="input-group"><label>IMAGE URL</label><input type="text" id="wpImg" oninput="uWP()"></div>
+            <div class="input-group"><label>CRIMES</label><input type="text" id="wpCrime" placeholder="MURDER, ROBBERY..." oninput="uWP()"></div>
+            <div class="input-group"><label>REWARD ($)</label><input type="text" id="wpRew" oninput="uWP()"></div>
+            <div class="input-group"><label>DETAILS</label><textarea id="wpDesc" rows="3" placeholder="Height, Weight, Last seen..." oninput="uWP()"></textarea></div>
+            <button class="btn-action" style="background:#b91c1c" onclick="dlImg('wp-canvas', 'WANTED')">EXPORT POSTER</button>
+        </div>
+
+        <div class="preview-stage">
+            <div id="wp-canvas" class="wanted-poster">
+                <div class="wp-header">WANTED</div>
+                <div class="wp-sub">WANTED BY SAPD </div>
+                
+                <div class="wp-photo-frame">
+                    <img src="" id="p-wpImg" onerror="this.style.display='none'">
+                    <div class="wp-stamp">SAPD MOST WANTED</div>
+                </div>
+
+                <h2 style="font-size:2rem; margin:0; text-transform:uppercase;" id="p-wpName">UNKNOWN</h2>
+                <div style="font-size:1rem; font-weight:bold; margin-bottom:10px;">AKA: <span id="p-wpAlias">...</span></div>
+
+                <div class="wp-details">
+                    <div class="wp-row"><span>DOB: UNKNOWN</span><span>SEX: MALE</span></div>
+                    <div class="wp-row"><span>NATIONALITY: SA</span><span>HAIR: UNKNOWN</span></div>
+                </div>
+
+                <div class="wp-crimes" id="p-wpCrime">WANTED FOR FEDERAL CRIMES</div>
+
+                <p style="font-family:'Arial'; font-size:0.8rem; line-height:1.2;" id="p-wpDesc">Subject is considered ARMED and DANGEROUS. Do not approach.</p>
+
+                <div class="wp-footer">REWARD: $<span id="p-wpRew">0</span></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+    <section id="court" class="view">
+    <div class="panel-head"><h2><i class="fas fa-gavel"></i> LEGAL STATEMENT</h2></div>
+    <div class="grid-split">
+        <div class="panel full-h scroll-y">
+            <h4 style="color:var(--primary)">1. DECLARANT INFO</h4>
+            <div class="flex-row">
+                <div class="input-group"><label>TYPE</label><select id="csType" onchange="uCourt()"><option>Officer Statement</option><option>Witness Statement</option><option>Defendant Statement</option></select></div>
+                <div class="input-group"><label>CASE #</label><input type="text" id="csCase" oninput="uCourt()"></div>
+            </div>
+            <div class="input-group"><label>FULL NAME</label><input type="text" id="csName" oninput="uCourt()"></div>
+            <div class="flex-row">
+                <div class="input-group"><label>ROLE/RANK</label><input type="text" id="csRank" placeholder="e.g. PO II" oninput="uCourt()"></div>
+                <div class="input-group"><label>BADGE ID</label><input type="text" id="csBadge" oninput="uCourt()"></div>
+            </div>
+
+            <h4 style="color:var(--primary); margin-top:15px;">2. FACTS & EVIDENCE</h4>
+            <div class="input-group"><label>CHRONOLOGICAL FACTS (NO OPINION)</label><textarea id="csFacts" rows="6" placeholder="On [Date] at [Time], I observed..." oninput="uCourt()"></textarea></div>
+            <div class="input-group"><label>EVIDENCE REFERENCE</label><input type="text" id="csEvid" placeholder="Bodycam footage, Item #01..." oninput="uCourt()"></div>
+            
+            <div class="input-group"><label>CHARGES (PC CODES)</label><textarea id="csCharges" rows="2" oninput="uCourt()"></textarea></div>
+
+            <div class="input-group" style="margin-top:10px;">
+                <label style="display:flex; align-items:center; color:var(--danger); cursor:pointer;">
+                    <input type="checkbox" id="csForceCheck" onchange="toggleForce()" style="width:auto; margin-right:10px;">
+                    USE OF FORCE REPORT (CHECK IF USED)
+                </label>
+            </div>
+            <div id="forceBox" class="force-group">
+                <div class="input-group"><label>LEVEL OF FORCE</label><select id="csForceLvl" onchange="uCourt()"><option>Soft Hand / Takedown</option><option>Tazer / Baton (Non-Lethal)</option><option>Lethal Force (Firearm)</option></select></div>
+                <div class="input-group"><label>REASON FOR FORCE</label><input type="text" id="csForceReason" oninput="uCourt()"></div>
+            </div>
+
+            <button class="btn-action" style="margin-top:20px;" onclick="dlImg('court-canvas', 'LegalStatement')">EXPORT LEGAL DOC</button>
+        </div>
+
+        <div class="preview-stage">
+            <div id="court-canvas" class="legal-paper">
+                <div class="lp-header">
+                    <h3>SUPERIOR COURT OF SAN ANDREAS</h3>
+                    <h2 id="p-csType">OFFICER STATEMENT</h2>
+                    <h3>COUNTY OF LOS SANTOS</h3>
+                </div>
+                
+                <div class="lp-meta">
+                    <span>CASE NUMBER: <span id="p-csCase">...</span></span>
+                    <span>DATE: <span id="p-csDate">...</span></span>
+                </div>
+
+                <div class="lp-section">
+                    <span class="lp-label">I. DECLARANT INFORMATION</span>
+                    <div class="lp-text">
+                        I, <b id="p-csName">...</b>, currently serving as <span id="p-csRank">...</span> (Badge: <span id="p-csBadge">...</span>) with the San Andreas Police Department, hereby submit this statement regarding the events related to the aforementioned case number.
+                    </div>
+                </div>
+
+                <div class="lp-oath">
+                    "I declare under penalty of perjury that the foregoing is true and correct to the best of my knowledge and belief."
+                </div>
+
+                <div class="lp-section">
+                    <span class="lp-label">II. STATEMENT OF FACTS</span>
+                    <div class="lp-text" id="p-csFacts">...</div>
+                </div>
+
+                <div id="p-forceSection" style="display:none;" class="lp-section">
+                    <span class="lp-label" style="color:#b00;">III. USE OF FORCE DISCLOSURE</span>
+                    <div class="lp-text">
+                        <b>Level Used:</b> <span id="p-csForceLvl">...</span><br>
+                        <b>Justification:</b> <span id="p-csForceReason">...</span>
+                    </div>
+                </div>
+
+                <div class="lp-section">
+                    <span class="lp-label">IV. CHARGES & EVIDENCE</span>
+                    <div class="lp-text">
+                        <b>Charges:</b> <span id="p-csCharges">...</span><br>
+                        <b>Evidence Ref:</b> <span id="p-csEvid">...</span>
+                    </div>
+                </div>
+                 
+                
+                <div class="lp-footer">
+                    <div class="lp-sig-line">SIGNATURE</div>
+                    <div style="text-align:right;">
+                        <div>BADGE: <span id="p-csBadgeSign">...</span></div>
+                        <div>DATE: <span id="p-csDateSign">...</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="award" class="view">
+    <div class="panel-head"><h2><i class="fas fa-medal"></i> AWARD CERTIFICATE</h2></div>
+    <div class="grid-split">
+        <div class="panel full-h scroll-y">
+            <h4 style="color:var(--warning)">1. AWARD DETAILS</h4>
+            <div class="input-group">
+                <label>TYPE</label>
+                <select id="awPeriod" onchange="autoDate()">
+                    <option value="week">Officer of the Week</option>
+                    <option value="month">Officer of the Month</option>
+                    <option value="year">Officer of the Year</option>
+                    <option value="commendation">Special Commendation</option>
+                    <option value="medal">Medal Of Service</option>
+                    <option value="purpleheart">DEA Purple Heart Award</option>
+                    <option value="valor">Medal of Valor</option> 
+                    <option value="honor">Honor Award for Public Service</option>
+                    <option value="investigation"></option>Criminal Investigation Award</option>
+                </select>
+            </div>
+            <div class="input-group"><label>DATE PERIOD</label><input type="text" id="awDateRange" oninput="uAward()"></div>
+            
+            <h4 style="color:var(--warning)">2. RECIPIENT</h4>
+            <div class="input-group"><label>OFFICER NAME</label><input type="text" id="awName" oninput="uAward()"></div>
+            <div class="flex-row">
+                <div class="input-group"><label>RANK</label><input type="text" id="awRank" oninput="uAward()"></div>
+                <div class="input-group"><label>BADGE / UNIT</label><input type="text" id="awUnit" oninput="uAward()"></div>
+            </div>
+
+            <h4 style="color:var(--warning)">3. REASON & SIGNATURE</h4>
+            <div class="input-group"><label>KEY ACHIEVEMENTS</label><textarea id="awAchieve" rows="4" placeholder="- Exceptional bravery&#10;- High arrest record" oninput="uAward()"></textarea></div>
+            
+            <div class="input-group"><label>SIGNED BY (TEXT)</label><input type="text" id="awSign" placeholder="Chief Arvyn..." oninput="uAward()"></div>
+            <div class="input-group"><label>SIGNER TITLE</label><input type="text" id="awSignTitle" placeholder="CHIEF OF POLICE" oninput="uAward()"></div>
+
+            <button class="btn-action" style="background:#ca8a04; color:#000;" onclick="dlImg('award-canvas', 'AwardCert')">PRINT CERTIFICATE</button>
+        </div>
+
+        <div class="preview-stage" style="background:#000;">
+            <div id="award-canvas" class="cert-frame">
+                <div class="cert-border">
+                    <div class="cert-corner c-tl"></div><div class="cert-corner c-tr"></div>
+                    <div class="cert-corner c-bl"></div><div class="cert-corner c-br"></div>
+                </div>
+
+                <div class="cert-header">
+                    <div class="cert-icon"><i class="fas fa-star"></i></div>
+                    <div class="cert-title" id="p-awTitle">OFFICER OF THE WEEK</div>
+                    <div class="cert-subtitle">SAN ANDREAS POLICE DEPARTMENT</div>
+                </div>
+
+                <div class="cert-recipient">
+                    <div class="cert-for">is hereby awarded to</div>
+                    <div class="cert-name" id="p-awName">NAME</div>
+                    <div class="cert-rank" id="p-awUnit">RANK | UNIT</div>
+                </div>
+
+                <div class="cert-body" id="p-awText">
+                    Loading text...
+                </div>
+
+                <div class="cert-footer">
+                    <div class="cert-date" id="p-awDate">DATE</div>
+                    <div class="cert-sig-box">
+                        <span class="cert-sig-text" id="p-awSign">Signature</span>
+                        <div class="cert-sig-label" id="p-awSignTitle">TITLE</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="identity" class="view">
+    <div class="panel-head"><h2><i class="fas fa-user-tag"></i> IDENTITY DATABASE</h2><span class="badge">FORMATTER</span></div>
+    <div class="grid-split">
+        <div class="panel full-h scroll-y">
+            <h4 style="color:var(--primary)">PERSONAL INFO</h4>
+            <div class="input-group"><label>FULL NAME</label><input type="text" id="idName" oninput="genId()"></div>
+            <div class="flex-row">
+                <div class="input-group"><label>GENDER</label><select id="idGender" onchange="genId()"><option value="Male">Male</option><option value="Female">Female</option></select></div>
+                <div class="input-group"><label>DOB</label><input type="date" id="idDob" onchange="calcAge('id'); genId()"></div>
+                <div class="input-group"><label>AGE</label><input type="text" id="idAge" readonly style="color:#666"></div>
+            </div>
+            <div class="flex-row">
+                <div class="input-group"><label>HEIGHT (CM)</label><input type="number" id="idHeight" oninput="genId()"></div>
+                <div class="input-group"><label>EYES</label><input type="text" id="idEyes" oninput="genId()"></div>
+                <div class="input-group"><label>HAIR</label><input type="text" id="idHair" oninput="genId()"></div>
+            </div>
+            <div class="input-group"><label>NATIONALITY</label><input type="text" id="idNat" value="San Andreas" oninput="genId()"></div>
+
+            <h4 style="color:var(--danger); margin-top:15px;">LEGAL STATUS</h4>
+            <div class="input-group"><label>ID CARD STATUS</label><select id="idStatus" onchange="genId()"><option value="VALID">VALID</option><option value="EXPIRED">EXPIRED</option><option value="FAKE">FAKE</option><option value="MISSING">MISSING</option></select></div>
+            <div class="input-group"><label>WANTED STATUS</label><select id="idWanted" onchange="genId()"><option value="NONE">NONE</option><option value="ACTIVE WARRANT">ACTIVE WARRANT</option><option value="CLEARED">CLEARED</option></select></div>
+            
+            <div class="input-group"><label>LICENSES (Format: Driver (Valid), etc)</label><input type="text" id="idLic" placeholder="e.g. Driver (Valid), Weapon (None)" oninput="genId()"></div>
+
+            <h4 style="color:var(--accent); margin-top:15px;">CONTEXT</h4>
+            <div class="input-group"><label>OCCUPATION</label><input type="text" id="idJob" oninput="genId()"></div>
+            <div class="input-group"><label>ADDRESS</label><input type="text" id="idAddr" oninput="genId()"></div>
+            <div class="input-group"><label>NOTES (Distinctive features)</label><textarea id="idNotes" rows="2" oninput="genId()"></textarea></div>
+        </div>
+
+        <div class="panel full-h" style="padding:20px;">
+            <label>OUTPUT RESULT</label>
+            <textarea id="idOutput" rows="15" readonly style="font-family:var(--font-mono); color:var(--success); border:1px solid var(--success);"></textarea>
+            <button class="copy-btn" onclick="copyToClip('idOutput')">COPY IDENTITY REPORT</button>
+        </div>
+    </div>
+</section>
+
+<section id="vehicle" class="view">
+    <div class="panel-head"><h2><i class="fas fa-car-side"></i> VEHICLE DATABASE</h2><span class="badge">FORMATTER</span></div>
+    <div class="grid-split">
+        <div class="panel full-h scroll-y">
+            <h4 style="color:var(--primary)">VEHICLE INFO</h4>
+            <div class="flex-row">
+                <div class="input-group"><label>MODEL</label><input type="text" id="vehModel" oninput="genVeh()"></div>
+                <div class="input-group"><label>COLOR</label><input type="text" id="vehColor" oninput="genVeh()"></div>
+            </div>
+            <div class="flex-row">
+                <div class="input-group"><label>PLATE</label><input type="text" id="vehPlate" style="text-transform:uppercase; font-weight:bold; color:var(--warning);" oninput="this.value=this.value.toUpperCase(); genVeh()"></div>
+                <div class="input-group"><label>CLASS</label><select id="vehClass" onchange="genVeh()"><option>Sedan</option><option>SUV</option><option>Sports</option><option>Coupe</option><option>Motorcycle</option><option>Truck</option><option>Industrial</option></select></div>
+            </div>
+
+            <h4 style="color:var(--danger); margin-top:15px;">REGISTRATION & OWNER</h4>
+            <div class="input-group"><label>REGISTRATION STATUS</label><select id="vehReg" onchange="genVeh()"><option value="VALID">VALID</option><option value="EXPIRED">EXPIRED</option><option value="STOLEN">STOLEN</option><option value="UNREGISTERED">UNREGISTERED</option></select></div>
+            <div class="input-group"><label>OWNER NAME</label><input type="text" id="vehOwner" oninput="genVeh()"></div>
+            <div class="input-group"><label>VIN (Frame Number)</label><input type="text" id="vehVin" placeholder="Auto-Generated if empty" oninput="genVeh()"></div>
+
+            <h4 style="color:var(--accent); margin-top:15px;">CONTEXT</h4>
+            <div class="input-group"><label>LAST SEEN LOC</label><input type="text" id="vehLoc" oninput="genVeh()"></div>
+            <div class="input-group"><label>CONDITION</label><select id="vehCond" onchange="genVeh()"><option>Clean / Intact</option><option>Damaged</option><option>Totaled / Wrecked</option><option>Stripped</option></select></div>
+            <div class="input-group"><label>NOTES</label><textarea id="vehNotes" rows="2" oninput="genVeh()"></textarea></div>
+        </div>
+
+        <div class="panel full-h" style="padding:20px;">
+            <label>OUTPUT RESULT</label>
+            <textarea id="vehOutput" rows="15" readonly style="font-family:var(--font-mono); color:var(--warning); border:1px solid var(--warning);"></textarea>
+            <button class="copy-btn" style="background:var(--warning); color:#000;" onclick="copyToClip('vehOutput')">COPY VEHICLE REPORT</button>
+        </div>
+    </div>
+</section>
+
+<section id="fic" class="view">
+    <div class="panel-head"><h2><i class="fas fa-address-card"></i> FIELD INTERVIEW CARD</h2><span class="badge">F.I.C.</span></div>
+    <div class="grid-split">
+        <div class="panel full-h scroll-y">
+            <h4 style="color:var(--primary)">A. CONTACT INFO</h4>
+            <div class="input-group"><label>OFFICER</label><input type="text" id="ficOff" oninput="uFIC()"></div>
+            <div class="input-group"><label>LOCATION</label><input type="text" id="ficLoc" oninput="uFIC()"></div>
+            <div class="input-group"><label>REASON</label><select id="ficReason" onchange="uFIC()"><option>Suspicious Activity</option><option>Traffic Stop</option><option>Witness Interview</option><option>Consensual Encounter</option><option>Subject of Investigation</option></select></div>
+
+            <h4 style="color:var(--primary); margin-top:15px;">B. SUBJECT INFO</h4>
+            <div class="input-group"><label>NAME</label><input type="text" id="ficName" oninput="uFIC()"></div>
+            <div class="flex-row">
+                <div class="input-group"><label>GENDER</label><select id="ficGender" onchange="uFIC()"><option>Male</option><option>Female</option></select></div>
+                <div class="input-group"><label>AGE</label><input type="number" id="ficAge" oninput="uFIC()"></div>
+            </div>
+            <div class="input-group"><label>ID STATUS</label><select id="ficIdStat" onchange="uFIC()"><option>Provided / Valid</option><option>Refused</option><option>Verbal Only</option><option>Fake / Invalid</option></select></div>
+            
+            <h4 style="color:var(--accent); margin-top:15px;">C. DETAILS & OBS</h4>
+            <div class="input-group"><label>DEMEANOR</label><select id="ficDem" onchange="uFIC()"><option>Calm / Cooperative</option><option>Nervous / Shaking</option><option>Aggressive / Hostile</option><option>Evasive</option><option>Under Influence</option></select></div>
+            <div class="input-group"><label>STATEMENT SUMMARY</label><textarea id="ficState" rows="2" placeholder="Subject stated that..." oninput="uFIC()"></textarea></div>
+            <div class="input-group"><label>ITEMS / OBSERVATION</label><input type="text" id="ficObs" placeholder="e.g. Smell of alcohol, large cash..." oninput="uFIC()"></div>
+            
+            <h4 style="color:var(--success); margin-top:15px;">D. DISPOSITION</h4>
+            <div class="input-group"><label>ACTION TAKEN</label><select id="ficAct" onchange="uFIC()"><option>No Action Taken</option><option>Verbal Warning</option><option>Citation Issued</option><option>Arrest Made</option><option>Information Only</option></select></div>
+            <div class="opt-row">
+                <input type="checkbox" id="ficFollow" onchange="uFIC()">
+                <label for="ficFollow">Follow-up Required?</label>
+            </div>
+            
+            <button class="btn-action" onclick="dlImg('fic-canvas', 'FIC_Card')">EXPORT IMAGE (JPG)</button>
+            <button class="btn-secondary" onclick="copyToClip('ficTextOut')">COPY TEXT ONLY</button>
+            <textarea id="ficTextOut" style="display:none;"></textarea>
+        </div>
+
+        <div class="preview-stage" style="background:#222;">
+            <div id="fic-canvas" class="fic-card">
+                <div class="fic-header">FIELD INTERVIEW CARD</div>
+                
+                <div class="fic-section">
+                    <div class="fic-grid-2">
+                        <div><span class="fic-label">DATE & TIME</span><span class="fic-value" id="p-ficDate">...</span></div>
+                        <div><span class="fic-label">LOCATION</span><span class="fic-value" id="p-ficLoc">...</span></div>
+                    </div>
+                    <div class="fic-grid-2" style="margin-top:5px;">
+                        <div><span class="fic-label">CONTACT OFFICER</span><span class="fic-value" id="p-ficOff">...</span></div>
+                        <div><span class="fic-label">REASON</span><span class="fic-value" id="p-ficReason">...</span></div>
+                    </div>
+                </div>
+
+                <div class="fic-section">
+                    <div class="fic-label" style="border-bottom:1px solid #eee; margin-bottom:5px;">SUBJECT INFORMATION</div>
+                    <div><span class="fic-label">FULL NAME</span><span class="fic-value" id="p-ficName">...</span></div>
+                    <div class="fic-grid-3" style="margin-top:5px;">
+                        <div><span class="fic-label">SEX</span><span class="fic-value" id="p-ficGender">...</span></div>
+                        <div><span class="fic-label">AGE</span><span class="fic-value" id="p-ficAge">...</span></div>
+                        <div><span class="fic-label">ID TYPE</span><span class="fic-value" id="p-ficIdStat">...</span></div>
+                    </div>
+                </div>
+
+                <div class="fic-section">
+                    <div><span class="fic-label">DEMEANOR</span><span class="fic-value" id="p-ficDem">...</span></div>
+                    <div style="margin-top:5px;"><span class="fic-label">OFFICER OBSERVATIONS / ITEMS</span><span class="fic-value" id="p-ficObs">...</span></div>
+                </div>
+
+                <div class="fic-section">
+                    <span class="fic-label">STATEMENT SUMMARY</span>
+                    <div class="fic-value" id="p-ficState" style="min-height:50px; font-weight:400; font-style:italic;">...</div>
+                </div>
+
+                <div class="fic-section" style="background:#eee; border:none;">
+                    <div class="fic-grid-2">
+                        <div><span class="fic-label">DISPOSITION</span><span class="fic-value" id="p-ficAct" style="background:transparent;">...</span></div>
+                        <div><span class="fic-label">FOLLOW UP?</span><span class="fic-value" id="p-ficFollow" style="background:transparent;">NO</span></div>
+                    </div>
+                </div>
+                
+                <div class="fic-footer">SAN ANDREAS POLICE DEPT. - INTERNAL USE ONLY</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<section id="idgen" class="view">
+    <div class="panel-head">
+        <h2><i class="fas fa-id-badge"></i> OFFICER ID CARD</h2>
+        <span class="badge">OFFICIAL ISSUE</span>
+    </div>
+    
+    <div class="grid-split">
+        <div class="panel full-h scroll-y">
+            <h4 style="color:var(--primary)">1. CORE IDENTITY</h4>
+            <div class="input-group"><label>OFFICER FULL NAME</label><input type="text" id="oidName" oninput="genOID()"></div>
+            
+            <div class="flex-row">
+                <div class="input-group"><label>RANK</label><input type="text" id="oidRank" placeholder="SERGEANT I" oninput="genOID()"></div>
+                <div class="input-group"><label>BADGE NUMBER</label><input type="text" id="oidBadge" placeholder="4921" oninput="genOID()"></div>
+            </div>
+            
+            <div class="flex-row">
+                <div class="input-group"><label>DIVISION / UNIT</label><input type="text" id="oidDiv" placeholder="PATROL" oninput="genOID()"></div>
+                <div class="input-group"><label>STATUS</label><select id="oidStat" onchange="genOID()"><option>ACTIVE DUTY</option><option>RESERVE</option><option>ADMINISTRATIVE</option></select></div>
+            </div>
+
+            <div class="input-group"><label>PORTRAIT PHOTO URL</label><input type="text" id="oidImg" placeholder="https://..." oninput="genOID()"></div>
+
+            <h4 style="color:var(--accent); margin-top:15px;">2. PHYSICAL & DATES</h4>
+            <div class="flex-row">
+                <div class="input-group"><label>DOB</label><input type="text" id="oidDob" placeholder="DD/MM/YYYY" oninput="genOID()"></div>
+                <div class="input-group"><label>HEIGHT</label><input type="text" id="oidHeight" placeholder="180 CM" oninput="genOID()"></div>
+                <div class="input-group"><label>BLOOD</label><input type="text" id="oidBlood" placeholder="O+" oninput="genOID()"></div>
+            </div>
+            
+            <div class="flex-row">
+                <div class="input-group"><label>ISSUE DATE</label><input type="text" id="oidIssue" placeholder="DD/MM/YYYY" oninput="genOID()"></div>
+                <div class="input-group"><label>EXPIRY DATE</label><input type="text" id="oidExp" placeholder="DD/MM/YYYY" oninput="genOID()"></div>
+            </div>
+
+            <h4 style="color:var(--warning); margin-top:15px;">3. AUTHORITY</h4>
+            <div class="input-group">
+                <label>AUTHORIZING SIGNATURE (CHIEF/SHERIFF)</label>
+                <input type="text" id="oidSignInput" placeholder="Type Name to Sign..." oninput="genOID()">
+            </div>
+            
+            <button class="btn-action" style="background:var(--primary); margin-top:20px;" onclick="dlImg('oid-canvas', 'OfficerID')">PRINT ID CARD (PNG)</button>
+        </div>
+
+        <div class="preview-stage" style="background:#111;">
+            
+            <div id="oid-canvas" class="oid-container">
+                <div class="oid-bg"></div>
+                <div class="oid-holo"></div>
+                
+                <div class="oid-header">
+                    <img src="SAPD.jpg" alt="Logo">
+                    <div class="oid-header-text">
+                        <h1>SAN ANDREAS</h1>
+                        <h1 style="font-size:1.2rem; color:#ffb700;">POLICE DEPARTMENT</h1>
+                        <span>OFFICIAL OFFICER IDENTIFICATION</span>
+                    </div>
+                </div>
+
+                <div class="oid-body">
+                    <div class="oid-photo-box">
+                        <img src="" id="p-oidImg" onerror="this.style.display='none'">
+                        <div class="oid-rank-badge" id="p-oidRank">RANK</div>
+                    </div>
+
+                    <div class="oid-info">
+                        <div class="oid-main-id">
+                            <span class="oid-label">OFFICER NAME</span>
+                            <span class="oid-val-lg" id="p-oidName">NAME</span>
+                            <div style="display:flex; justify-content:space-between; margin-top:5px;">
+                                <div><span class="oid-label">BADGE NO.</span><span class="oid-val-md" style="color:#b91c1c" id="p-oidBadge">0000</span></div>
+                                <div><span class="oid-label">STATUS</span><span class="oid-val-md" style="color:green" id="p-oidStat">ACTIVE</span></div>
+                            </div>
+                        </div>
+
+                        <div class="oid-grid">
+                            <div><span class="oid-label">DIVISION</span><span class="oid-val-sm" id="p-oidDiv">...</span></div>
+                            <div><span class="oid-label">DATE OF BIRTH</span><span class="oid-val-sm" id="p-oidDob">...</span></div>
+                            <div><span class="oid-label">HEIGHT</span><span class="oid-val-sm" id="p-oidHeight">...</span></div>
+                            <div><span class="oid-label">BLOOD TYPE</span><span class="oid-val-sm" id="p-oidBlood">...</span></div>
+                            <div><span class="oid-label">ISSUE DATE</span><span class="oid-val-sm" id="p-oidIssue">...</span></div>
+                            <div><span class="oid-label">EXPIRY DATE</span><span class="oid-val-sm" style="color:#b91c1c" id="p-oidExp">...</span></div>
+                        </div>
+
+                        <div class="oid-footer">
+                            <div class="oid-barcode" id="p-oidBar">||| |||| ||</div>
+                            <div class="oid-sig-area">
+                                <span class="oid-sig" id="p-oidSign">Signature</span>
+                                <span class="oid-auth">Commisioner</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="oid-micro">Property of San Andreas Government. Unlawful possession is a crime.[For Roleplay Purposes Only]</div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<section id="roster" class="view">
+    <div class="panel-head">
+        <h2><i class="fas fa-users"></i> PERSONNEL ROSTER</h2>
+        <span class="badge">STATIC LIST</span>
+    </div>
+
+    <div class="grid-split">
+        <div class="panel full-h scroll-y" style="flex: 2;">
+            <div class="roster-header">
+                <div class="input-group" style="margin:0; width:100%;">
+                    <input type="text" id="rosterSearch" placeholder="Search Name or Badge..." oninput="renderRoster()">
+                </div>
+            </div>
+
+            <div id="pd-roster-container">
+                </div>
+            
+            <div style="height: 30px;"></div> <div id="det-roster-container">
+                </div>
+        </div>
+
+        <div class="panel full-h scroll-y" style="flex: 1.2; border-left: 1px solid var(--border);">
+            <div class="nav-label" style="margin-top:0">RANK DIRECTORY</div>
+            <table class="rank-table">
+                <thead>
+                    <tr>
+                        <th>RANK</th>
+                        <th>ABBR</th>
+                        <th>AUTHORITY</th>
+                    </tr>
+                </thead>
+                <tbody id="rank-info-body">
+                    </tbody>
+            </table>
+
+            <div class="nav-label">LEGEND</div>
+            <div style="display:flex; gap:10px; flex-wrap:wrap; font-size:0.8rem; color:#888;">
+                <div style="display:flex; align-items:center; gap:5px;"><span class="m-status st-active" style="position:static;"></span> Active</div>
+                <div style="display:flex; align-items:center; gap:5px;"><span class="m-status st-reserve" style="position:static;"></span> Reserve</div>
+                <div style="display:flex; align-items:center; gap:5px;"><span class="m-status st-probation" style="position:static;"></span> Probation</div>
+                <div style="display:flex; align-items:center; gap:5px;"><span class="m-status st-vacant" style="position:static;"></span> Vacant</div>
+            </div>
+            
+            <button class="btn-secondary" style="margin-top:20px;" onclick="copyRosterText()"><i class="fas fa-copy"></i> COPY ROSTER FOR DISCORD</button>
+        </div>
+    </div>
+</section>
+
+
+<section id="permit" class="view">
+    <div class="panel-head">
+        <h2><i class="fas fa-file-signature"></i> OFFICIAL PERMIT SYSTEM</h2>
+        <span class="badge">A4 LETTER FORMAT</span>
+    </div>
+
+    <div class="grid-split">
+        <div class="panel full-h scroll-y" style="flex:1;">
+            <h4 style="color:var(--primary)">1. PERMIT TYPE</h4>
+            <div class="input-group">
+                <select id="pmType" onchange="togglePermitInput()">
+                    <option value="event">EVENT PERMIT (Izin Keramaian)</option>
+                    <option value="weapon">WEAPON LICENSE (Kepemilikan Senjata)</option>
+                    <option value="driver">COMMERCIAL DRIVER (Izin Mengemudi Khusus)</option>
+                    <option value="business">BUSINESS OPERATION PERMIT</option>
+                    <option value="hunting">HUNTING PERMIT</option>
+                </select>
+            </div>
+
+            <h4 style="color:var(--primary); margin-top:15px;">2. APPLICANT DETAILS</h4>
+            <div class="input-group"><label>FULL NAME / ORG NAME</label><input type="text" id="pmName" oninput="genPermit()"></div>
+            <div class="input-group"><label>IDENTITY NUMBER (ID/KTP)</label><input type="text" id="pmId" oninput="genPermit()"></div>
+            <div class="input-group"><label>ADDRESS</label><input type="text" id="pmAddr" oninput="genPermit()"></div>
+
+            <div id="input-event" class="pm-group">
+                <h4 style="color:var(--accent); margin-top:15px;">3. EVENT DETAILS</h4>
+                <div class="input-group"><label>EVENT NAME</label><input type="text" id="evName" placeholder="e.g. Los Santos Car Meet" oninput="genPermit()"></div>
+                <div class="flex-row">
+                    <div class="input-group"><label>DATE</label><input type="date" id="evDate" oninput="genPermit()"></div>
+                    <div class="input-group"><label>TIME</label><input type="text" id="evTime" placeholder="18:00 - 22:00" oninput="genPermit()"></div>
+                </div>
+                <div class="input-group"><label>VENUE / LOCATION</label><input type="text" id="evLoc" oninput="genPermit()"></div>
+                <div class="input-group"><label>ESTIMATED CROWD</label><input type="number" id="evCrowd" placeholder="e.g. 500" oninput="genPermit()"></div>
+            </div>
+
+            <div id="input-generic" class="pm-group hidden">
+                <h4 style="color:var(--accent); margin-top:15px;">3. LICENSE DETAILS</h4>
+                <div class="input-group"><label>LICENSE CLASS / TIER</label><input type="text" id="pmClass" placeholder="e.g. Class A (Heavy Weapon)" oninput="genPermit()"></div>
+                <div class="input-group"><label>VALID UNTIL</label><input type="date" id="pmExp" oninput="genPermit()"></div>
+            </div>
+
+            <h4 style="color:var(--warning); margin-top:15px;">4. AUTHORIZATION</h4>
+            <div class="input-group"><label>CONDITIONS / RESTRICTIONS</label><textarea id="pmCond" rows="3" placeholder="- Dilarang membawa sajam&#10;- Wajib lapor jika..." oninput="genPermit()"></textarea></div>
+            <div class="input-group"><label>ISSUING OFFICER</label><input type="text" id="pmSign" oninput="genPermit()"></div>
+            <div class="input-group"><label>OFFICER RANK</label><input type="text" id="pmRank" oninput="genPermit()"></div>
+
+            <button class="btn-action" style="margin-top:20px;" onclick="dlImg('permit-sheet', 'OfficialPermit')">PRINT / SAVE DOCUMENT</button>
+        </div>
+
+        <div class="permit-viewport">
+            <div id="permit-sheet" class="permit-sheet">
+                <div class="permit-watermark">OFFICIAL</div>
+                
+                <div class="letter-head">
+                    <img src="SAPD.jpg" alt="Logo">
+                    <div class="head-text">
+                        <h1>SAN ANDREAS POLICE DEPARTMENT</h1>
+                        <h2>Licensing & Permits Division</h2>
+                        <p>Pershing Square HQ, Los Santos, San Andreas</p>
+                    </div>
+                </div>
+
+                <div class="letter-title" id="p-pmTitle">EVENT PERMIT AUTHORIZATION</div>
+                <div class="letter-ref">Ref No: <span id="p-pmRef">EVT-2025-001</span></div>
+
+                <div class="letter-body">
+                    <p>To Whom It May Concern,</p>
+                    
+                    <p id="p-pmIntro">
+                        Pursuant to the regulations of the State of San Andreas and the authority vested in the Licensing Division, this document serves as official authorization for:
+                    </p>
+
+                    <table class="info-table" id="p-tableInfo">
+                        </table>
+
+                    <div id="p-eventBox" class="event-box" style="display:none;">
+                        <strong><i class="fas fa-calendar-alt"></i> EVENT DETAILS:</strong><br><br>
+                        Activity: <span id="p-evName" class="info-val">...</span><br>
+                        Date/Time: <span id="p-evDateTime" class="info-val">...</span><br>
+                        Location: <span id="p-evLoc" class="info-val">...</span><br>
+                        Max Capacity: <span id="p-evCrowd" class="info-val">...</span> Pax
+                    </div>
+
+                    <p><strong>CONDITIONS OF ISSUANCE:</strong></p>
+                    <p id="p-pmCond" style="white-space: pre-line; font-family:'Courier Prime'; font-size:10pt;">
+                        - Strict adherence to public safety protocols.
+                    </p>
+
+                    <p>Failure to comply with the stated conditions or applicable laws may result in the immediate revocation of this permit and potential legal action.</p>
+                </div>
+
+                <div class="letter-footer">
+                    <div>
+                        <p>Date of Issue:</p>
+                        <p class="info-val" id="p-issueDate">...</p>
+                    </div>
+                    <div class="sig-block">
+                        <div class="stamp-seal">APPROVED</div>
+                        <span class="sig-title">AUTHORIZED BY:</span>
+                        <br><br>
+                        <span class="sig-name" id="p-pmSign">Officer Name</span>
+                        <span class="sig-rank" id="p-pmRank">Rank / Title</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<section id="records" class="view">
+    <div class="panel-head">
+        <h2><i class="fas fa-file-certificate"></i> LEGAL RECORDS</h2>
+        <span class="badge">OFFICIAL DOCUMENTS</span>
+    </div>
+
+    <div class="grid-split">
+        <div class="panel full-h scroll-y" style="flex:1;">
+            <div class="input-group">
+                <label>DOCUMENT TYPE</label>
+                <select id="recType" onchange="toggleRecordMode()">
+                    <option value="cgc">CGC - Certificate of Good Conduct</option>
+                    <option value="cmr">CMR - Criminal Management Record</option>
+                </select>
+            </div>
+
+            <h4 style="color:var(--primary); margin-top:15px;">SUBJECT PROFILE</h4>
+            <div class="input-group"><label>FULL NAME</label><input type="text" id="recName" oninput="uRec()"></div>
+            <div class="flex-row">
+                <div class="input-group"><label>DOB</label><input type="text" id="recDob" placeholder="DD/MM/YYYY" oninput="uRec()"></div>
+                <div class="input-group"><label>CITIZENSHIP / ALIAS</label><input type="text" id="recCit" placeholder="San Andreas" oninput="uRec()"></div>
+            </div>
+            <div class="input-group"><label>ID NUMBER</label><input type="text" id="recId" oninput="uRec()"></div>
+
+            <div id="inp-cmr" class="hidden">
+                <h4 style="color:var(--danger); margin-top:15px;">CRIMINAL HISTORY</h4>
+                <div class="flex-row">
+                    <div class="input-group"><label>FELONIES</label><input type="number" id="recFel" value="0" oninput="uRec()"></div>
+                    <div class="input-group"><label>MISDEMEANORS</label><input type="number" id="recMis" value="0" oninput="uRec()"></div>
+                </div>
+                <div class="input-group"><label>LAST OFFENSE DATE</label><input type="date" id="recLast" oninput="uRec()"></div>
+                <div class="input-group"><label>STATUS OVERRIDE</label><select id="recStatOv" onchange="uRec()"><option value="auto">Auto-Calculate</option><option value="clear">CLEAR</option><option value="pending">PENDING INVESTIGATION</option><option value="active">ACTIVE RECORD</option></select></div>
+            </div>
+
+            <div id="inp-cgc">
+                <h4 style="color:var(--warning); margin-top:15px;">VALIDITY</h4>
+                <div class="input-group"><label>VALID UNTIL (EXPIRY)</label><input type="date" id="recExp" oninput="uRec()"></div>
+                <div class="input-group"><label>JURISDICTION</label><input type="text" id="recJur" value="State of San Andreas" oninput="uRec()"></div>
+            </div>
+
+            <h4 style="color:var(--accent); margin-top:15px;">AUTHORIZATION</h4>
+            <div class="input-group"><label>ISSUING OFFICER</label><input type="text" id="recOff" oninput="uRec()"></div>
+            <div class="input-group"><label>RANK / POSITION</label><input type="text" id="recRank" oninput="uRec()"></div>
+
+            <button class="btn-action" style="margin-top:20px;" onclick="dlRecord()">EXPORT DOCUMENT</button>
+        </div>
+
+        <div class="rec-viewport">
+            
+            <div id="card-cgc" class="legal-card style-cgc">
+                <div class="cgc-bg"></div>
+                <div class="cgc-seal">OFFICIAL<br>SAPD<br>SEAL</div>
+                
+                <div class="cgc-header">
+                    <img src="SAPD.jpg" alt="Logo">
+                    <div class="cgc-title">Certificate of Good Conduct</div>
+                    <div class="cgc-sub">ISSUED BY THE SAN ANDREAS POLICE DEPARTMENT</div>
+                </div>
+
+                <div class="cgc-body">
+                    <div class="cgc-text">
+                        This is to certify that based on the records available at the time of issuance, the individual identified as:
+                    </div>
+                    
+                    <div class="cgc-name" id="p-cgcName">Name Here</div>
+                    
+                    <div class="cgc-text">
+                        <br>Has <b>NO ACTIVE CRIMINAL CONVICTIONS</b> or pending felony warrants within the jurisdiction of <span id="p-cgcJur">San Andreas</span>.
+                    </div>
+                    
+                    <div style="font-size:0.7rem; color:#666; font-style:italic; margin-top:20px;">
+                        * This certificate does not preclude undisclosed or pending investigations. Valid only until the expiration date.
+                    </div>
+                </div>
+
+                <div class="cgc-body" style="flex:0; padding-bottom:30px;">
+                     <div class="cgc-meta">
+                        <div style="text-align:left;">
+                            <div>CERTIFICATE #: <b id="p-cgcNum">...</b></div>
+                            <div>VALID UNTIL: <b id="p-cgcExp" style="color:#b91c1c">...</b></div>
+                        </div>
+                        <div style="text-align:right;">
+                            <div class="legal-sig" id="p-cgcSign">Signature</div>
+                            <div style="text-transform:uppercase; font-size:0.7rem; font-weight:bold;" id="p-cgcRank">Officer Rank</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="card-cmr" class="legal-card style-cmr" style="display:none;">
+                <div class="cmr-header">
+                    <div class="cmr-brand">
+                        <h1>CRIMINAL RECORD</h1>
+                        <span>MANAGEMENT SUMMARY</span>
+                    </div>
+                    <div class="cmr-meta">
+                        ID: <span id="p-cmrNum">...</span><br>
+                        DATE: <span id="p-cmrDate">...</span>
+                    </div>
+                </div>
+
+                <div class="cmr-body">
+                    <div class="cmr-section">
+                        <div class="cmr-status-box">
+                            <span class="cmr-label">CURRENT STATUS</span>
+                            <div class="cmr-pill pill-green" id="p-cmrStat">CLEAR</div>
+                        </div>
+                        <div class="cmr-grid-2">
+                            <div style="margin-bottom:10px;">
+                                <span class="cmr-label">SUBJECT FULL NAME</span>
+                                <span class="cmr-val" id="p-cmrName">...</span>
+                            </div>
+                            <div style="display:flex; gap:15px;">
+                                <div><span class="cmr-label">DOB</span><span class="cmr-val" id="p-cmrDob">...</span></div>
+                                <div><span class="cmr-label">CITIZENSHIP/ALIAS</span><span class="cmr-val" id="p-cmrCit">...</span></div>
+                                <div><span class="cmr-label">GOV ID</span><span class="cmr-val" id="p-cmrId">...</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="cmr-section" style="background:#fcfcfc;">
+                        <span class="cmr-label" style="color:#b91c1c; border-bottom:1px solid #eee; padding-bottom:5px; margin-bottom:10px;">CRIMINAL HISTORY SUMMARY</span>
+                        
+                        <div class="cmr-stats-grid">
+                            <div class="cmr-stat"><span class="cmr-label">TOTAL CASES</span><big id="p-cmrTotal">0</big></div>
+                            <div class="cmr-stat"><span class="cmr-label">FELONIES</span><big id="p-cmrFel" style="color:#b91c1c">0</big></div>
+                            <div class="cmr-stat"><span class="cmr-label">MISDEMEANORS</span><big id="p-cmrMis">0</big></div>
+                        </div>
+
+                        <div style="margin-top:15px; display:flex; justify-content:space-between;">
+                            <div><span class="cmr-label">LAST RECORDED OFFENSE</span><span class="cmr-val" id="p-cmrLast">NONE</span></div>
+                            <div><span class="cmr-label">DATA SOURCE</span><span class="cmr-val">SAPD CENTRAL DB</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="cmr-footer">
+                    <div class="cmr-disclaimer">
+                        DISCLAIMER: This record reflects information available at the time of generation and may not include sealed, expunged, or juvenile cases. This is NOT a clearance certificate.
+                    </div>
+                    <div style="text-align:right;">
+                        <div class="legal-sig" style="font-size:1rem; min-width:100px;" id="p-cmrSign">Officer</div>
+                        <div style="font-weight:bold;">VERIFYING OFFICER</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+
+<section id="medcert" class="view">
+    <div class="panel-head">
+        <h2><i class="fas fa-heartbeat"></i> MEDICAL CERTIFICATE</h2>
+        <span class="badge">CLINICAL RECORD</span>
+    </div>
+
+    <div class="grid-split">
+        <div class="panel full-h scroll-y" style="flex:1;">
+            <h4 style="color:var(--danger)">1. PATIENT IDENTITY</h4>
+            <div class="input-group"><label>FULL NAME</label><input type="text" id="mdName" oninput="uMed()"></div>
+            <div class="flex-row">
+                <div class="input-group"><label>DOB</label><input type="text" id="mdDob" placeholder="DD/MM/YYYY" oninput="uMed()"></div>
+                <div class="input-group"><label>SEX</label><select id="mdSex" onchange="uMed()"><option>MALE</option><option>FEMALE</option></select></div>
+            </div>
+            <div class="flex-row">
+                <div class="input-group"><label>BLOOD TYPE</label><select id="mdBlood" onchange="uMed()"><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>O+</option><option>O-</option><option>AB+</option><option>AB-</option></select></div>
+                <div class="input-group"><label>HEIGHT (CM)</label><input type="number" id="mdHgt" placeholder="175" oninput="uMed()"></div>
+                <div class="input-group"><label>WEIGHT (KG)</label><input type="number" id="mdWgt" placeholder="70" oninput="uMed()"></div>
+            </div>
+
+            <h4 style="color:var(--danger); margin-top:15px;">2. CLINICAL EVALUATION</h4>
+            <div class="input-group"><label>PHYSICAL HEALTH</label><select id="mdPhy" onchange="uMed()"><option value="pass">PASS - No Issues</option><option value="warn">OBSERVE - Minor Injury</option><option value="fail">FAIL - Critical Condition</option></select></div>
+            <div class="input-group"><label>MENTAL/PSYCH STATUS</label><select id="mdPsy" onchange="uMed()"><option value="pass">STABLE</option><option value="warn">UNSTABLE / STRESSED</option><option value="fail">CRITICAL / UNFIT</option></select></div>
+            <div class="input-group"><label>DRUG SCREENING</label><select id="mdDrug" onchange="uMed()"><option value="pass">NEGATIVE (Clear)</option><option value="fail">POSITIVE (Detected)</option></select></div>
+
+            <h4 style="color:var(--danger); margin-top:15px;">3. CONCLUSION</h4>
+            <div class="input-group"><label>NOTES / ALLERGIES</label><textarea id="mdNotes" rows="3" placeholder="No known allergies. Patient is in good health." oninput="uMed()"></textarea></div>
+            
+            <div class="input-group"><label>FINAL STATUS</label><select id="mdStat" onchange="uMed()"><option value="fit">TEST PASSED</option><option value="light">LIGHT RISK</option><option value="unfit">HIGH RISK</option></select></div>
+
+            <div class="input-group"><label>ATTENDING DOCTOR</label><input type="text" id="mdDoc" oninput="uMed()"></div>
+            <div class="input-group"><label>MEDICAL LICENSE ID</label><input type="text" id="mdLic" oninput="uMed()"></div>
+
+            <button class="btn-action" style="margin-top:20px; background:#ef4444;" onclick="dlImg('card-med', 'MedCert')">EXPORT CERTIFICATE</button>
+        </div>
+
+        <div class="rec-viewport">
+            
+            <div id="card-med" class="legal-card style-med">
+                <div class="med-header">
+                    <div class="med-brand">
+                        <i class="fas fa-star-of-life"></i> <div class="med-title">
+                            <h1>MEDICAL RECORD</h1>
+                            <span>CERTIFICATE OF HEALTH</span>
+                        </div>
+                    </div>
+                    <div class="med-meta">
+                        REF: <span id="p-mdRef">MED-0000</span><br>
+                        DATE: <span id="p-mdDate">...</span>
+                    </div>
+                </div>
+
+                <div class="med-body">
+                    <div class="med-watermark"><i class="fas fa-user-md"></i></div>
+
+                    <div class="med-patient-strip">
+                        <div class="med-p-group">
+                            <span class="med-label">PATIENT NAME</span>
+                            <span class="med-val" id="p-mdName">NAME</span>
+                        </div>
+                        <div class="med-p-group" style="margin-left:20px;">
+                            <span class="med-label">DOB / SEX</span>
+                            <span class="med-val"><span id="p-mdDob">...</span> / <span id="p-mdSex">...</span></span>
+                        </div>
+                        <div class="med-blood">
+                            <div style="font-size:0.6rem; opacity:0.8;">BLOOD</div>
+                            <span id="p-mdBlood" style="font-size:1.2rem;">-</span>
+                        </div>
+                    </div>
+
+                    <div class="med-grid">
+                        <div class="med-box">
+                            <span class="med-head-sm">VITALS & BIOMETRICS</span>
+                            <div class="med-check-row"><span>HEIGHT:</span> <span id="p-mdHgt">... cm</span></div>
+                            <div class="med-check-row"><span>WEIGHT:</span> <span id="p-mdWgt">... kg</span></div>
+                            <div class="med-check-row"><span>BMI:</span> <span id="p-mdBmi">...</span></div>
+                        </div>
+                        <div class="med-box">
+                            <span class="med-head-sm">EVALUATION RESULTS</span>
+                            <div class="med-check-row"><span>PHYSICAL:</span> <span id="p-mdPhy" class="med-res res-pass">-</span></div>
+                            <div class="med-check-row"><span>PSYCH:</span> <span id="p-mdPsy" class="med-res res-pass">-</span></div>
+                            <div class="med-check-row"><span>DRUG TEST:</span> <span id="p-mdDrug" class="med-res res-pass">-</span></div>
+                        </div>
+                    </div>
+
+                    <div class="med-label" style="margin-top:15px; margin-left:5px;">CLINICAL NOTES / FINDINGS:</div>
+                    <div class="med-notes" id="p-mdNotes">...</div>
+
+                    <div class="med-footer">
+                        <div>
+                            <span class="med-label">FINAL CONCLUSION</span>
+                            <div class="med-conclusion" id="p-mdStat">TEST PASSED</div>
+                        </div>
+                        <div class="med-doc-sig">
+                            <span class="med-sig-img" id="p-mdDocSig">Doctor</span>
+                            <span class="med-doc-name">Dr. <span id="p-mdDoc">Name</span></span>
+                            <span class="med-label">LICENSE: <span id="p-mdLic">...</span></span>
+                        </div>
+                    </div>
+                    
+                    <div style="font-size:0.6rem; color:#999; text-align:center; margin-top:10px;">
+                        CONFIDENTIAL MEDICAL DOCUMENT • HIPAA COMPLIANT • SAN ANDREAS MEDICAL SERVICES
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
     </main>
 
     <script>
@@ -606,7 +3005,7 @@
   {code:'GO',name:'SECTION 8 - Government Offenses',time:0,fine:0},
   {code:'PR',name:'SECTION 9 - Property Offenses',time:0,fine:0},
   {code:'AM',name:'SECTION 10 - Acknowledgement & Amendments',time:0,fine:0},
-  {code:'FC',name:'SECTION 11 - Fraud, Corruption & Tax Evasion',time:0,fine:0},
+  {code:'FC',name:'SECTION 11 - Fraud, Corruption & Tax Evasion(CK)',time:0,fine:0},
   {code:'OC',name:'SECTION 12 - Organized Crime & Gang Activity',time:0,fine:0},
   {code:'TT',name:'SECTION 13 - Terrorism & Treason',time:0,fine:0},
   {code:'IA',name:'SECTION 14 - Internal Affairs',time:0,fine:0},
@@ -1467,6 +3866,1091 @@
             else { timerInt=setInterval(()=>{ sec++; document.getElementById('patrolTimer').innerText=new Date(sec*1000).toISOString().substr(11,8); }, 1000); btn.innerHTML='<i class="fas fa-pause"></i>'; }
         }
         function timerReset() { if(timerInt) timerToggle(); sec=0; document.getElementById('patrolTimer').innerText="00:00:00"; }
+
+        /* === LOGIC BARU === */
+
+
+/* === FUNGSI DOWNLOAD BARU (FIXED MUGSHOT) === */
+
+// 2. DISCORD COMPOSER LOGIC
+function genDiscord() {
+    const t = document.getElementById('dcTitle').value.toUpperCase();
+    const off = document.getElementById('dcOfficer').value;
+    const date = document.getElementById('dcDate').value;
+    const sus = document.getElementById('dcSuspect').value;
+    const body = document.getElementById('dcBody').value;
+    const ev = document.getElementById('dcEvid').value;
+
+    const res = `
+**[ ${t} ]**
+> **Date:** ${date}
+> **Officer:** ${off}
+
+**SUBJECT:**
+\`${sus}\`
+
+**NARRATIVE:**
+\`\`\`
+${body}
+\`\`\`
+**EVIDENCE:**
+${ev ? ev : 'N/A'}
+    `.trim();
+    
+    document.getElementById('dcOutput').value = res;
+}
+
+// 3. TREASURY CALC LOGIC
+function calcTreasury() {
+    // Splitter
+    const amt = parseFloat(document.getElementById('trAmount').value) || 0;
+    const cut = parseFloat(document.getElementById('trCut').value) || 0;
+    const gov = amt * (cut/100);
+    const keep = amt - gov;
+    
+    document.getElementById('outKeep').innerText = "$" + keep.toLocaleString();
+    document.getElementById('outDepo').innerText = "$" + gov.toLocaleString();
+
+    // Salary
+    const mins = parseFloat(document.getElementById('trMins').value) || 0;
+    const rate = parseFloat(document.getElementById('trRate').value) || 0;
+    const hours = mins / 30;
+    const total = hours * rate;
+
+    document.getElementById('outSal').innerText = "$" + Math.floor(total).toLocaleString();
+}
+
+    /* === TACTICAL BOARD LOGIC === */
+const canvas = document.getElementById('tacCanvas');
+const ctx = canvas.getContext('2d');
+let drawing = false;
+let penColor = 'white';
+
+// Auto Resize Canvas agar Full Screen di panelnya
+function resizeCanvas() {
+    const parent = document.getElementById('canvas-wrap');
+    if(parent) {
+        canvas.width = parent.clientWidth;
+        canvas.height = parent.clientHeight;
+    }
+}
+window.addEventListener('resize', resizeCanvas);
+
+// Init saat menu dibuka
+document.getElementById('btn-tactical').addEventListener('click', () => {
+    setTimeout(resizeCanvas, 100); // Delay dikit biar panel load dulu
+});
+
+// Mouse Events
+canvas.addEventListener('mousedown', startDraw);
+canvas.addEventListener('mouseup', stopDraw);
+canvas.addEventListener('mousemove', draw);
+
+function startDraw(e) {
+    drawing = true;
+    draw(e); // Biar bisa bikin titik
+}
+
+function stopDraw() {
+    drawing = false;
+    ctx.beginPath(); // Reset path biar gak nyambung ke garis baru
+}
+
+function draw(e) {
+    if (!drawing) return;
+
+    // Koordinat Mouse relatif terhadap canvas
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    ctx.lineWidth = 3;
+    ctx.lineCap = 'round';
+    ctx.strokeStyle = penColor;
+
+    ctx.lineTo(x, y);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+}
+
+function setPen(color, btn) {
+    penColor = color;
+    document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+}
+
+function clearBoard() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+function dlTactical() {
+    const link = document.createElement('a');
+    link.download = `TACTICAL-PLAN-${Date.now()}.png`;
+    link.href = canvas.toDataURL();
+    link.click();
+}
+
+        // === UPDATE VISUAL LABS LOGIC ===
+
+
+    /* GUIDE SWITCHER */
+function swG(id) {
+    // Sembunyikan semua konten
+    document.querySelectorAll('.g-content').forEach(e => e.classList.add('hidden'));
+    // Tampilkan yang dipilih
+    document.getElementById('g-'+id).classList.remove('hidden');
+    
+    // Update tombol aktif
+    document.querySelectorAll('.btn-guide').forEach(e => e.classList.remove('active'));
+    event.currentTarget.classList.add('active');
+}
+
+        
+
+/* === 2. DETECTIVE MAP LOGIC (SIMPLE DRAG) === */
+const mapContainer = document.getElementById('map-container');
+let draggedEl = null;
+
+function addNode(type) {
+    const el = document.createElement('div');
+    el.className = `map-node ${type}`;
+    if(type=='suspect') el.innerHTML = '<i class="fas fa-user"></i>';
+    else if(type=='evidence') el.innerHTML = '<i class="fas fa-gun"></i>';
+    else el.innerHTML = '<i class="fas fa-sticky-note"></i>';
+    
+    // Random position
+    el.style.top = (Math.random() * 300) + 'px';
+    el.style.left = (Math.random() * 300) + 'px';
+
+    // Drag Logic
+    el.onmousedown = function(e) {
+        draggedEl = el;
+        document.onmousemove = function(e) {
+            if(!draggedEl) return;
+            const rect = mapContainer.getBoundingClientRect();
+            draggedEl.style.left = (e.clientX - rect.left - 30) + 'px';
+            draggedEl.style.top = (e.clientY - rect.top - 30) + 'px';
+        }
+        document.onmouseup = function() { draggedEl = null; document.onmousemove = null; }
+    };
+
+    // Delete on double click
+    el.ondblclick = function() { el.remove(); };
+
+    mapContainer.appendChild(el);
+}
+function clearMap() { mapContainer.innerHTML = '<canvas id="mapCanvas" style="position:absolute; top:0; left:0; pointer-events:none;"></canvas>'; }
+
+/* === LOGIC VISUAL LABS V2 === */
+
+// 1. Update Criminal Record
+function uCR() {
+    // Identity
+    document.getElementById('p-crName').innerText = document.getElementById('crName').value.toUpperCase() || "UNKNOWN";
+    document.getElementById('p-crDob').innerText = document.getElementById('crDob').value || "UNKNOWN";
+    document.getElementById('p-crGen').innerText = document.getElementById('crGen').value.toUpperCase() || "...";
+    document.getElementById('p-crAddr').innerText = document.getElementById('crAddr').value.toUpperCase() || "NO FIXED ADDRESS";
+    
+    // Case
+    document.getElementById('p-crOff').innerText = document.getElementById('crOff').value.toUpperCase() || "...";
+    document.getElementById('p-crChg').innerText = document.getElementById('crChg').value || "PENDING CHARGES";
+    document.getElementById('p-crDesc').innerText = document.getElementById('crDesc').value || "No narrative provided.";
+    
+    // Legal
+    document.getElementById('p-crTime').innerText = (document.getElementById('crTime').value || "0") + " MONTHS";
+    document.getElementById('p-crFine').innerText = "$" + (document.getElementById('crFine').value || "0");
+    document.getElementById('p-crStat').innerText = document.getElementById('crStat').value.toUpperCase();
+    
+    // Meta & Image
+    document.getElementById('p-crDate').innerText = new Date().toLocaleDateString();
+    document.getElementById('p-crCase').innerText = "#CS-" + Math.floor(Math.random()*10000);
+    
+    const url = document.getElementById('crImg').value;
+    const img = document.getElementById('p-crImg');
+    if(url) { img.src = url; img.style.display = "block"; } else { img.style.display = "none"; }
+}
+
+// 2. Update Duty Report
+function uDR() {
+    document.getElementById('p-drName').innerText = document.getElementById('drName').value.toUpperCase() || "OFFICER";
+    document.getElementById('p-drRank').innerText = document.getElementById('drRank').value.toUpperCase() || "...";
+    
+    const s = document.getElementById('drStart').value || "00:00";
+    const e = document.getElementById('drEnd').value || "00:00";
+    document.getElementById('p-drShift').innerText = `${s} - ${e}`;
+    
+    document.getElementById('p-drArr').innerText = document.getElementById('drArr').value;
+    document.getElementById('p-drTic').innerText = document.getElementById('drTic').value;
+    document.getElementById('p-drFine').innerText = parseInt(document.getElementById('drFine').value || 0).toLocaleString();
+    
+    document.getElementById('p-drType').innerText = document.getElementById('drType').value.toUpperCase() || "GENERAL PATROL";
+    document.getElementById('p-drLoc').innerText = document.getElementById('drLoc').value.toUpperCase() || "ALL SECTORS";
+    document.getElementById('p-drLog').innerText = document.getElementById('drLog').value || "Nothing to report.";
+    
+    document.getElementById('p-drDate').innerText = "DATE: " + new Date().toLocaleDateString();
+}
+
+// 3. Update Wanted Poster
+function uWP() {
+    document.getElementById('p-wpName').innerText = document.getElementById('wpName').value.toUpperCase() || "UNKNOWN";
+    document.getElementById('p-wpAlias').innerText = document.getElementById('wpAlias').value.toUpperCase() || "NONE";
+    document.getElementById('p-wpCrime').innerText = document.getElementById('wpCrime').value.toUpperCase() || "CRIMES...";
+    document.getElementById('p-wpRew').innerText = parseInt(document.getElementById('wpRew').value || 0).toLocaleString();
+    document.getElementById('p-wpDesc').innerText = document.getElementById('wpDesc').value || "Contact SAPD immediately if seen.";
+    
+    const url = document.getElementById('wpImg').value;
+    const img = document.getElementById('p-wpImg');
+    if(url) { img.src = url; img.style.display = "block"; } else { img.style.display = "none"; }
+}
+
+// 4. Export Function (Sakti)
+function dlImg(id, name) {
+    const el = document.getElementById(id);
+    // Kita set background specific agar tidak transparan bolong
+    const bg = id === 'wp-canvas' ? '#f3f4f6' : '#111'; 
+    
+    html2canvas(el, {
+        scale: 2, // Biar HD
+        backgroundColor: bg,
+        useCORS: true // Wajib buat gambar dari Discord/Imgur
+    }).then(canvas => {
+        const link = document.createElement('a');
+        link.download = `${name}_${Date.now()}.jpg`;
+        link.href = canvas.toDataURL("image/jpeg", 0.9);
+        link.click();
+    });
+}
+
+    /* === COURT LOGIC === */
+function toggleForce() {
+    const chk = document.getElementById('csForceCheck');
+    const box = document.getElementById('forceBox');
+    const prev = document.getElementById('p-forceSection');
+    
+    if(chk.checked) {
+        box.classList.add('show');
+        prev.style.display = 'block';
+    } else {
+        box.classList.remove('show');
+        prev.style.display = 'none';
+    }
+    uCourt();
+}
+
+function uCourt() {
+    // Header Info
+    document.getElementById('p-csType').innerText = document.getElementById('csType').value.toUpperCase();
+    document.getElementById('p-csCase').innerText = document.getElementById('csCase').value || "N/A";
+    const date = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    document.getElementById('p-csDate').innerText = date;
+    document.getElementById('p-csDateSign').innerText = date;
+
+    // Declarant
+    document.getElementById('p-csName').innerText = document.getElementById('csName').value.toUpperCase() || "[NAME]";
+    document.getElementById('p-csRank').innerText = document.getElementById('csRank').value || "[RANK]";
+    const badge = document.getElementById('csBadge').value || "[ID]";
+    document.getElementById('p-csBadge').innerText = badge;
+    document.getElementById('p-csBadgeSign').innerText = badge;
+
+    // Body
+    document.getElementById('p-csFacts').innerText = document.getElementById('csFacts').value || "No statement provided.";
+    document.getElementById('p-csCharges').innerText = document.getElementById('csCharges').value || "N/A";
+    document.getElementById('p-csEvid').innerText = document.getElementById('csEvid').value || "None.";
+    document.getElementById('p-sign').innerText = document.getElementById('sign').value || "Nothing provided.";
+
+    // Force
+    document.getElementById('p-csForceLvl').innerText = document.getElementById('csForceLvl').value;
+    document.getElementById('p-csForceReason').innerText = document.getElementById('csForceReason').value;
+}
+
+/* === AWARD LOGIC === */
+function autoDate() {
+    const p = document.getElementById('awPeriod').value;
+    const now = new Date();
+    let str = "";
+    
+    // Set Title
+    let title = "OFFICER OF THE WEEK";
+    if (p === 'month') title = "OFFICER OF THE MONTH";
+    if (p === 'year') title = "OFFICER OF THE YEAR";
+    if (p === 'commendation') title = "SPECIAL COMMENDATION";
+    if (p === 'medal') title = "Medal Of Service";
+    if (p === 'purpleheart') title = "DEA Purple Heart Award";
+    if (p === 'valor') title = "Medal of Valor";
+    if (p === 'honor') title = "Honor Award for Public Service";
+    if (p === 'investigation') title = "Criminal Investigation Award";
+
+    document.getElementById('p-awTitle').innerText = title;
+
+    // Set Date
+    if (p === 'week') {
+        const first = now.getDate() - now.getDay(); 
+        const last = first + 6;
+        str = `${new Date(now.setDate(first)).toLocaleDateString()} - ${new Date(now.setDate(last)).toLocaleDateString()}`;
+    } else if (p === 'month') {
+        str = now.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    } else if (p === 'year') {
+        str = now.getFullYear();
+    } else {
+        str = "DATE OF ISSUE: " + now.toLocaleDateString();
+    }
+    document.getElementById('awDateRange').value = str;
+    uAward();
+}
+
+function uAward() {
+    // Recipient
+    document.getElementById('p-awName').innerText = document.getElementById('awName').value.toUpperCase() || "OFFICER NAME";
+    const r = document.getElementById('awRank').value.toUpperCase() || "RANK";
+    const u = document.getElementById('awUnit').value.toUpperCase() || "UNIT";
+    document.getElementById('p-awUnit').innerText = `${r} | ${u}`;
+    
+    document.getElementById('p-awDate').innerText = document.getElementById('awDateRange').value;
+    
+    // Signature Handwriting
+    document.getElementById('p-awSign').innerText = document.getElementById('awSign').value || "Command";
+    document.getElementById('p-awSignTitle').innerText = document.getElementById('awSignTitle').value.toUpperCase() || "COMMAND STAFF";
+
+    // Dynamic Achievement List (Anti Tabrakan)
+    const points = document.getElementById('awAchieve').value.split('\n').filter(line => line.trim() !== '');
+    let html = `In recognition of your exceptional service to the San Andreas Police Department. Your dedication sets a standard for all officers to follow.<br><br>`;
+    
+    if (points.length > 0) {
+        html += `<div style="text-align:left; display:inline-block;">`; // Wrapper biar rapi di tengah
+        points.forEach(pt => {
+            html += `&bull; ${pt.replace(/^-/, '').trim()}<br>`;
+        });
+        html += `</div>`;
+    }
+    
+    document.getElementById('p-awText').innerHTML = html;
+}
+
+/* === UPDATE DL IMG UNTUK BACKGROUND PUTIH === */
+// Pastikan function dlImg di update atau timpa dengan ini
+function dlImg(id, name) {
+    const el = document.getElementById(id);
+    // Tentukan background berdasarkan ID element
+    let bg = '#111'; // Default dark
+    if (id === 'court-canvas') bg = '#ffffff'; // Kertas Putih
+    if (id === 'award-canvas') bg = '#1e293b'; // Biru Tua Sertifikat
+    if (id === 'wp-canvas') bg = '#f3f4f6'; // Kertas Buram Poster
+    
+    html2canvas(el, {
+        scale: 2, 
+        backgroundColor: bg,
+        useCORS: true
+    }).then(canvas => {
+        const link = document.createElement('a');
+        link.download = `${name}_${Date.now()}.png`; // PNG lebih tajam untuk text
+        link.href = canvas.toDataURL("image/png");
+        link.click();
+    });
+}
+
+/* === LOGIC BARU: IDENTITY, VEHICLE, FIC === */
+
+// Helper: Hitung Umur
+function calcAge(prefix) {
+    const dobInput = document.getElementById(prefix + 'Dob').value;
+    if(!dobInput) return;
+    const dob = new Date(dobInput);
+    const diff_ms = Date.now() - dob.getTime();
+    const age_dt = new Date(diff_ms);
+    const age = Math.abs(age_dt.getUTCFullYear() - 1970);
+    document.getElementById(prefix + 'Age').value = age;
+}
+
+// Helper: Formatter Cerdas (Hide empty)
+function ln(label, val) {
+    if(!val || val.trim() === "") return "";
+    // Pad label agar sejajar (kosmetik text)
+    const padLabel = label.padEnd(14, ' '); 
+    return `${padLabel}: ${val}\n`;
+}
+
+// 1. IDENTITY GENERATOR
+function genId() {
+    const name = document.getElementById('idName').value;
+    const gender = document.getElementById('idGender').value;
+    const dob = document.getElementById('idDob').value; // YYYY-MM-DD
+    // Format DOB jadi DD/MM/YYYY
+    const dobFmt = dob ? dob.split('-').reverse().join('/') : "";
+    const age = document.getElementById('idAge').value;
+    const nat = document.getElementById('idNat').value;
+    
+    const h = document.getElementById('idHeight').value;
+    const eyes = document.getElementById('idEyes').value;
+    const hair = document.getElementById('idHair').value;
+    const appear = [h ? h+"cm" : "", eyes, hair].filter(Boolean).join(", ");
+
+    const stat = document.getElementById('idStatus').value;
+    const wanted = document.getElementById('idWanted').value;
+    const lic = document.getElementById('idLic').value;
+    
+    const job = document.getElementById('idJob').value;
+    const addr = document.getElementById('idAddr').value;
+    const note = document.getElementById('idNotes').value;
+
+    let res = `[IDENTITY CHECK RESULT]\n`;
+    res += ln("Name", name);
+    res += ln("Gender", gender);
+    res += ln("DOB", dobFmt + (age ? ` (${age} y.o)` : ""));
+    res += ln("Nationality", nat);
+    res += ln("Appearance", appear);
+    res += "------------------------------\n";
+    res += ln("ID Status", stat);
+    res += ln("Licenses", lic);
+    res += ln("Wanted Status", wanted);
+    res += "------------------------------\n";
+    res += ln("Occupation", job);
+    res += ln("Address", addr);
+    res += ln("Notes", note);
+
+    document.getElementById('idOutput').value = res;
+}
+
+// 2. VEHICLE GENERATOR
+function genVeh() {
+    const model = document.getElementById('vehModel').value;
+    const color = document.getElementById('vehColor').value;
+    const plate = document.getElementById('vehPlate').value;
+    const vclass = document.getElementById('vehClass').value;
+    const reg = document.getElementById('vehReg').value;
+    const owner = document.getElementById('vehOwner').value;
+    
+    let vin = document.getElementById('vehVin').value;
+    // Smart VIN: Generate kalau kosong tapi ada Plate
+    if(!vin && plate) {
+        vin = "1HG-" + plate + "-X09"; 
+    }
+
+    const loc = document.getElementById('vehLoc').value;
+    const cond = document.getElementById('vehCond').value;
+    const notes = document.getElementById('vehNotes').value;
+
+    let res = `[VEHICLE CHECK RESULT]\n`;
+    res += ln("Vehicle Model", model);
+    res += ln("Color", color);
+    res += ln("Plate", plate);
+    res += ln("Class", vclass);
+    res += "------------------------------\n";
+    res += ln("Registration", reg);
+    res += ln("Owner", owner);
+    res += ln("VIN", vin);
+    res += "------------------------------\n";
+    res += ln("Last Seen", loc);
+    res += ln("Condition", cond);
+    res += ln("Notes", notes);
+
+    document.getElementById('vehOutput').value = res;
+}
+
+// 3. FIC GENERATOR (Update Visual + Text)
+function uFIC() {
+    // Ambil Values
+    const date = new Date().toLocaleString();
+    const off = document.getElementById('ficOff').value;
+    const loc = document.getElementById('ficLoc').value;
+    const reason = document.getElementById('ficReason').value;
+    
+    const name = document.getElementById('ficName').value || "UNKNOWN";
+    const gender = document.getElementById('ficGender').value;
+    const age = document.getElementById('ficAge').value;
+    const idStat = document.getElementById('ficIdStat').value;
+    
+    const dem = document.getElementById('ficDem').value;
+    const state = document.getElementById('ficState').value;
+    const obs = document.getElementById('ficObs').value;
+    
+    const act = document.getElementById('ficAct').value;
+    const follow = document.getElementById('ficFollow').checked ? "YES" : "NO";
+
+    // Update Visual Card (Preview)
+    document.getElementById('p-ficDate').innerText = date;
+    document.getElementById('p-ficLoc').innerText = loc.toUpperCase() || "N/A";
+    document.getElementById('p-ficOff').innerText = off.toUpperCase();
+    document.getElementById('p-ficReason').innerText = reason.toUpperCase();
+    
+    document.getElementById('p-ficName').innerText = name.toUpperCase();
+    document.getElementById('p-ficGender').innerText = gender.toUpperCase();
+    document.getElementById('p-ficAge').innerText = age || "?";
+    document.getElementById('p-ficIdStat').innerText = idStat.toUpperCase();
+    
+    document.getElementById('p-ficDem').innerText = dem.toUpperCase();
+    document.getElementById('p-ficObs').innerText = obs || "None";
+    document.getElementById('p-ficState').innerText = state ? `"${state}"` : "Subject refused to speak / No statement.";
+    
+    document.getElementById('p-ficAct').innerText = act.toUpperCase();
+    document.getElementById('p-ficFollow').innerText = follow;
+    if(follow === "YES") document.getElementById('p-ficFollow').style.color = "red";
+    else document.getElementById('p-ficFollow').style.color = "black";
+
+    // Update Text Output (Hidden textarea for copy)
+    let txt = `[FIELD INTERVIEW CARD]\n`;
+    txt += `Date: ${date} | Officer: ${off}\n`;
+    txt += `Loc: ${loc} | Reason: ${reason}\n`;
+    txt += `Subject: ${name} (${gender}/${age}) | ID: ${idStat}\n`;
+    txt += `Demeanor: ${dem}\n`;
+    txt += `Statement: ${state}\n`;
+    txt += `Obs/Items: ${obs}\n`;
+    txt += `Action: ${act} | Follow-up: ${follow}`;
+    document.getElementById('ficTextOut').value = txt;
+}
+
+
+/* === OFFICER ID GENERATOR LOGIC === */
+function genOID() {
+    // Core Identity
+    document.getElementById('p-oidName').innerText = document.getElementById('oidName').value.toUpperCase() || "OFFICER NAME";
+    document.getElementById('p-oidRank').innerText = document.getElementById('oidRank').value.toUpperCase() || "RANK";
+    document.getElementById('p-oidBadge').innerText = document.getElementById('oidBadge').value || "0000";
+    document.getElementById('p-oidDiv').innerText = document.getElementById('oidDiv').value.toUpperCase() || "GENERAL";
+    document.getElementById('p-oidStat').innerText = document.getElementById('oidStat').value.toUpperCase();
+
+    // Physical & Dates
+    document.getElementById('p-oidDob').innerText = document.getElementById('oidDob').value || "DD/MM/YYYY";
+    document.getElementById('p-oidHeight').innerText = document.getElementById('oidHeight').value.toUpperCase() || "-";
+    document.getElementById('p-oidBlood').innerText = document.getElementById('oidBlood').value.toUpperCase() || "-";
+    document.getElementById('p-oidIssue').innerText = document.getElementById('oidIssue').value || "DD/MM/YYYY";
+    document.getElementById('p-oidExp').innerText = document.getElementById('oidExp').value || "DD/MM/YYYY";
+
+    // Signature
+    const sig = document.getElementById('oidSignInput').value;
+    document.getElementById('p-oidSign').innerText = sig || "Authorized Signature";
+
+    // Photo
+    const url = document.getElementById('oidImg').value;
+    const img = document.getElementById('p-oidImg');
+    if(url) { 
+        img.src = url; 
+        img.style.display = 'block'; 
+    } else { 
+        img.style.display = 'none'; 
+    }
+    
+    // Barcode (Dummy Generation based on Badge)
+    const badge = document.getElementById('oidBadge').value || "0000";
+    document.getElementById('p-oidBar').innerText = `SAPD-${badge}`;
+}
+
+    /* === PERSONNEL DATA (EDIT DISINI UNTUK UPDATE) === */
+
+// 1. STRUKTUR RANK (Urutan Tinggi ke Rendah)
+const rankStructure = [
+    { name: "Commissioner", abbr: "Com.", level: 6, desc: "Department Head. Highest Authority." },
+    { name: "Chief of Police", abbr: "Chief", level: 5, desc: "Executive Command. Oversees all operations." },
+    { name: "Assistant Chief of Police", abbr: "Asst. Chief", level: 5, desc: "Executive Command support." },
+    { name: "Deputy Chief of Police", abbr: "Dep. Chief", level: 5, desc: "Bureau Commander." },
+    { name: "Commander", abbr: "Cmdr.", level: 4, desc: "Area Commander." },
+    { name: "Captain", abbr: "Cpt.", level: 4, desc: "Station/Division Commander." },
+    { name: "Lieutenant II", abbr: "Lt. II", level: 3, desc: "Watch Commander / Section Head." },
+    { name: "Lieutenant I", abbr: "Lt. I", level: 3, desc: "Watch Commander." },
+    { name: "Sergeant III", abbr: "Sgt. III", level: 2, desc: "Senior Supervisor." },
+    { name: "Sergeant II", abbr: "Sgt. II", level: 2, desc: "Field Supervisor." },
+    { name: "Sergeant I", abbr: "Sgt. I", level: 2, desc: "Field Supervisor." },
+    { name: "Corporal", abbr: "Cpl.", level: 1, desc: "Field Training Officer (FTO)." },
+    { name: "Lead Police Officer", abbr: "LPO", level: 1, desc: "Senior Officer." },
+    { name: "Police Officer III", abbr: "PO III", level: 0, desc: "Field Officer." },
+    { name: "Police Officer II", abbr: "PO II", level: 0, desc: "Field Officer." },
+    { name: "Police Officer I", abbr: "PO I", level: 0, desc: "Probationary Officer." },
+    
+    // Detective Specific Ranks
+    { name: "Chief of Detective", abbr: "CoD", level: 5, desc: "Head of Detective Bureau." },
+    { name: "Detective III", abbr: "Det. III", level: 2, desc: "Senior Investigator." },
+    { name: "Detective II", abbr: "Det. II", level: 1, desc: "Investigator." },
+    { name: "Detective I", abbr: "Det. I", level: 0, desc: "Junior Investigator." },
+    { name: "Intelligence Officer", abbr: "Intel", level: 0, desc: "Intelligence Gathering." }
+];
+
+// 2. DATA ANGGOTA POLICE (EDIT DISINI)
+// Status: 'Active', 'Reserve', 'Probation', 'Inactive', 'Vacant'
+const personnel = [
+    { rank: "Commissioner", name: "David Anderson", badge: "100", status: "Active", unit: "Command" },
+    { rank: "Chief of Police", name: "Vyshclav Valterovich", badge: "101", status: "Active", unit: "Command" },
+    { rank: "Assistant Chief of Police", name: "VACANT", badge: "-", status: "Vacant", unit: "-" },
+    { rank: "Deputy Chief of Police", name: "VACANT", badge: "-", status: "Vacant", unit: "-" },
+    { rank: "Commander", name: "VACANT", badge: "-", status: "Vacant", unit: "-" },
+    { rank: "Captain", name: "VACANT", badge: "-", status: "Vacant", unit: "-" },
+    { rank: "Lieutenant II", name: "VACANT", badge: "-", status: "Vacant", unit: "-" },
+    { rank: "Lieutenant I", name: "VACANT", badge: "-", status: "Vacant", unit: "-" },
+    { rank: "Sergeant III", name: "VACANT", badge: "-", status: "Vacant", unit: "-" },
+    { rank: "Sergeant II", name: "VACANT", badge: "-", status: "Vacant", unit: "-" },
+    { rank: "Sergeant I", name: "Francis Wheatley", badge: "4921", status: "Active", unit: "Patrol" },
+    { rank: "Corporal", name: "VACANT", badge: "-", status: "Vacant", unit: "-" },
+    { rank: "Lead Police Officer", name: "VACANT", badge: "-", status: "Vacant", unit: "-" },
+    { rank: "Police Officer III", name: "Humberto Valentino", badge: "3022", status: "Active", unit: "Patrol" },
+    { rank: "Police Officer III", name: "Thomas Eddison", badge: "3105", status: "Active", unit: "Patrol" },
+    { rank: "Police Officer II", name: "Tarnell Hawkins", badge: "2044", status: "Active", unit: "Patrol" },
+    { rank: "Police Officer II", name: "Yael Hicks", badge: "2055", status: "Active", unit: "Patrol" },
+    { rank: "Police Officer II", name: "Erland Lawrance", badge: "2091", status: "Active", unit: "Patrol" },
+    { rank: "Police Officer I", name: "Ghane Delacruz", badge: "1101", status: "Probation", unit: "Patrol" },
+    { rank: "Police Officer I", name: "Jayden Chimaev", badge: "1102", status: "Probation", unit: "Patrol" },
+    { rank: "Police Officer I", name: "Enejota Junior", badge: "1103", status: "Probation", unit: "Patrol" },
+    { rank: "Police Officer I", name: "Dallevante Paquetesa", badge: "1104", status: "Probation", unit: "Patrol" }
+];
+
+// 3. DATA DETECTIVE (EDIT DISINI)
+const detectives = [
+    { rank: "Chief of Detective", name: "David Anderson", badge: "100", status: "Active", unit: "Bureau Chief" },
+    { rank: "Detective III", name: "VACANT", badge: "-", status: "Vacant", unit: "-" },
+    { rank: "Detective II", name: "VACANT", badge: "-", status: "Vacant", unit: "-" },
+    { rank: "Detective I", name: "VACANT", badge: "-", status: "Vacant", unit: "-" },
+    { rank: "Intelligence Officer", name: "VACANT", badge: "-", status: "Vacant", unit: "-" }
+];
+
+
+/* === LOGIC RENDERER (JANGAN UBAH BAGIAN INI KECUALI PAHAM JS) === */
+
+function renderRoster() {
+    const search = document.getElementById('rosterSearch').value.toLowerCase();
+    
+    // Render PD
+    renderSection('pd-roster-container', 'POLICE DEPARTMENT RANK LIST', personnel, search);
+    
+    // Render Detectives
+    renderSection('det-roster-container', 'DETECTIVE DIVISION RANK LIST', detectives, search);
+    
+    // Render Rank Info Sidebar
+    renderRankInfo();
+}
+
+function renderSection(containerId, title, data, query) {
+    const container = document.getElementById(containerId);
+    container.innerHTML = `<div class="dept-title">${title}</div>`;
+    
+    // Ambil Rank unik yang ada di data ini, urutkan berdasarkan index di rankStructure
+    let usedRanks = [...new Set(data.map(item => item.rank))];
+    usedRanks.sort((a, b) => {
+        return rankStructure.findIndex(r => r.name === a) - rankStructure.findIndex(r => r.name === b);
+    });
+
+    usedRanks.forEach(rankName => {
+        // Filter anggota di rank ini
+        const members = data.filter(m => m.rank === rankName);
+        
+        // Filter Search (Client Side)
+        const filtered = members.filter(m => m.name.toLowerCase().includes(query) || m.badge.toLowerCase().includes(query));
+
+        if(filtered.length > 0) {
+            // Tentukan warna header rank
+            const rankMeta = rankStructure.find(r => r.name === rankName) || {level:0};
+            let headerClass = "rank-header";
+            if(rankMeta.level >= 5) headerClass += " high-command";
+            else if(rankMeta.level >= 3) headerClass += " command";
+
+            let html = `<div class="rank-group">
+                <div class="${headerClass}">
+                    <span>${rankName.toUpperCase()}</span>
+                    <span>${filtered.length}</span>
+                </div>
+                <div class="member-grid">`;
+
+            filtered.forEach(m => {
+                let stClass = "st-vacant";
+                if(m.status === 'Active') stClass = "st-active";
+                if(m.status === 'Reserve') stClass = "st-reserve";
+                if(m.status === 'Probation') stClass = "st-probation";
+                if(m.status === 'Inactive') stClass = "st-inactive";
+
+                const isVacant = m.name === 'VACANT';
+                
+                html += `
+                <div class="member-card" style="${isVacant ? 'opacity:0.5;' : ''}">
+                    <span class="m-status ${stClass}"></span>
+                    <div class="m-name">${m.name}</div>
+                    <div class="m-badge">Badge: ${m.badge}</div>
+                    <div class="m-div">${m.unit}</div>
+                </div>`;
+            });
+
+            html += `</div></div>`;
+            container.innerHTML += html;
+        }
+    });
+}
+
+function renderRankInfo() {
+    const body = document.getElementById('rank-info-body');
+    body.innerHTML = "";
+    rankStructure.forEach(r => {
+        body.innerHTML += `
+            <tr>
+                <td>${r.name}</td>
+                <td class="rank-abbr">${r.abbr}</td>
+                <td style="font-size:0.7rem; color:#666;">${r.desc}</td>
+            </tr>
+        `;
+    });
+}
+
+function copyRosterText() {
+    let txt = "**SAPD ROSTER**\n\n";
+    
+    // Helper to loop
+    const process = (list) => {
+        let currentRank = "";
+        list.forEach(m => {
+             // Skip VACANT for text copy to save space
+            if(m.name === 'VACANT') return;
+            
+            if(m.rank !== currentRank) {
+                txt += `\n**[ ${m.rank} ]**\n`;
+                currentRank = m.rank;
+            }
+            txt += `- ${m.badge} | ${m.name} (${m.status})\n`;
+        });
+    }
+
+    // Sort Global by rank index
+    const sortedPD = [...personnel].sort((a, b) => rankStructure.findIndex(r => r.name === a.rank) - rankStructure.findIndex(r => r.name === b.rank));
+    
+    process(sortedPD);
+    
+    navigator.clipboard.writeText(txt);
+    alert("Roster Copied to Clipboard (Markdown Format)");
+}
+
+// Initialize
+window.addEventListener('load', renderRoster);
+
+/* === LICENSE GENERATOR LOGIC === */
+let currentLicId = ""; // Simpan ID agar statis saat editing
+
+function generateLicId(type) {
+    // Generate Random Non-Sequential ID
+    const prefix = type === 'driver' ? 'DL' : type === 'weapon' ? 'WP' : type === 'medical' ? 'MD' : 'PM';
+    const rand = Math.floor(Math.random() * 900000) + 100000;
+    const suffix = String.fromCharCode(65 + Math.floor(Math.random() * 26)) + Math.floor(Math.random() * 9);
+    return `${prefix}-${rand}-${suffix}`;
+}
+
+function updateLic() {
+    // 1. Theme Handler (Contextual Styling)
+    const type = document.getElementById('licType').value;
+    const card = document.getElementById('lic-canvas');
+    
+    // Reset classes
+    card.className = "lic-container"; 
+    
+    // Apply Theme
+    if(type === 'driver') {
+        card.classList.add('theme-driver');
+        document.getElementById('p-licTitle').innerText = "DRIVER LICENSE";
+        document.getElementById('p-licAuth').innerText = "STATE OF SAN ANDREAS";
+    } else if(type === 'weapon') {
+        card.classList.add('theme-weapon');
+        document.getElementById('p-licTitle').innerText = "WEAPON PERMIT";
+        document.getElementById('p-licAuth').innerText = "SAN ANDREAS POLICE DEPT";
+    } else if(type === 'medical') {
+        card.classList.add('theme-medical');
+        document.getElementById('p-licTitle').innerText = "MEDICAL LICENSE";
+        document.getElementById('p-licAuth').innerText = "BOARD OF MEDICINE";
+    } else if(type === 'pilot') {
+        card.classList.add('theme-pilot');
+        document.getElementById('p-licTitle').innerText = "PILOT CERTIFICATE";
+        document.getElementById('p-licAuth').innerText = "FEDERAL AVIATION ADMIN";
+    } else {
+        card.classList.add('theme-business');
+        document.getElementById('p-licTitle').innerText = "BUSINESS LICENSE";
+        document.getElementById('p-licAuth').innerText = "CITY COMMERCE BUREAU";
+    }
+
+    // 2. ID Generation (One time per session unless cleared)
+    if(!currentLicId) currentLicId = generateLicId(type);
+    document.getElementById('p-licNum').innerText = currentLicId;
+
+    // 3. Data Mapping
+    const fields = ['Name', 'Dob', 'Sex', 'Hgt', 'Hair', 'Eyes', 'Class', 'Rest', 'Iss', 'Exp'];
+    fields.forEach(f => {
+        const val = document.getElementById('lic' + f).value;
+        document.getElementById('p-lic' + f).innerText = val.toUpperCase() || (f==='Rest' ? 'NONE' : "...");
+    });
+
+    // 4. Photo Logic
+    const url = document.getElementById('licImg').value;
+    const imgBox = document.getElementById('p-licPhotoBox');
+    const img = document.getElementById('p-licImg');
+    
+    if(url) { img.src = url; img.style.display='block'; }
+    else { img.style.display='none'; }
+
+    if(document.getElementById('licGray').checked) imgBox.classList.add('grayscale');
+    else imgBox.classList.remove('grayscale');
+
+    // 5. Worn Effect
+    if(document.getElementById('licWorn').checked) document.getElementById('lic-worn-layer').style.display = 'block';
+    else document.getElementById('lic-worn-layer').style.display = 'none';
+
+    // 6. Status & Sig
+    const stat = document.getElementById('licStat').value;
+    const statEl = document.getElementById('p-licStat');
+    statEl.innerText = stat;
+    statEl.className = "lic-status"; // Reset
+    if(stat === 'ACTIVE') statEl.classList.add('stat-active');
+    else statEl.classList.add('stat-suspended');
+
+    document.getElementById('p-licSign').innerText = document.getElementById('licSign').value || "Officer";
+}
+
+// Init saat load
+window.addEventListener('load', () => {
+    // Set default dates
+    const today = new Date();
+    document.getElementById('licIss').value = today.toLocaleDateString();
+    const exp = new Date(); exp.setFullYear(today.getFullYear() + 5);
+    document.getElementById('licExp').value = exp.toLocaleDateString();
+});
+/* === OFFICIAL PERMIT LOGIC === */
+
+// Toggle Input Fields based on type
+function togglePermitInput() {
+    const t = document.getElementById('pmType').value;
+    const evGroup = document.getElementById('input-event');
+    const genGroup = document.getElementById('input-generic');
+
+    if (t === 'event') {
+        evGroup.classList.remove('hidden');
+        genGroup.classList.add('hidden');
+    } else {
+        evGroup.classList.add('hidden');
+        genGroup.classList.remove('hidden');
+    }
+    genPermit();
+}
+
+function genPermit() {
+    const type = document.getElementById('pmType').value;
+    
+    // Common Data
+    const name = document.getElementById('pmName').value || "......................";
+    const id = document.getElementById('pmId').value || "......................";
+    const addr = document.getElementById('pmAddr').value || "......................";
+    const cond = document.getElementById('pmCond').value || "- No special conditions.";
+    const sign = document.getElementById('pmSign').value || "......................";
+    const rank = document.getElementById('pmRank').value || "Commanding Officer";
+
+    // Set Header & Ref
+    let title = "SURAT IZIN";
+    let refPrefix = "GEN";
+    let tableHtml = "";
+    
+    // Logic per Type
+    if (type === 'event') {
+        title = "EVENT PERMIT AUTHORIZATION";
+        title += "<br><span style='font-size:10pt; font-weight:normal;'>(Surat Izin Keramaian)</span>";
+        refPrefix = "EVT";
+        
+        // Populate Applicant Info
+        tableHtml += `<tr><td class="info-label">APPLICANT / ORG</td><td class="info-sep">:</td><td class="info-val">${name.toUpperCase()}</td></tr>`;
+        tableHtml += `<tr><td class="info-label">ID / REG NUMBER</td><td class="info-sep">:</td><td class="info-val">${id}</td></tr>`;
+        tableHtml += `<tr><td class="info-label">ADDRESS</td><td class="info-sep">:</td><td class="info-val">${addr}</td></tr>`;
+
+        // Show Event Box
+        document.getElementById('p-eventBox').style.display = 'block';
+        document.getElementById('p-evName').innerText = (document.getElementById('evName').value || "Unknown Event").toUpperCase();
+        document.getElementById('p-evDateTime').innerText = (document.getElementById('evDate').value + " | " + document.getElementById('evTime').value);
+        document.getElementById('p-evLoc').innerText = document.getElementById('evLoc').value.toUpperCase();
+        document.getElementById('p-evCrowd').innerText = document.getElementById('evCrowd').value;
+
+    } else {
+        // Generic License Logic
+        document.getElementById('p-eventBox').style.display = 'none';
+        const pClass = document.getElementById('pmClass').value || "Standard";
+        const pExp = document.getElementById('pmExp').value || "Indefinite";
+
+        if (type === 'weapon') { title = "WEAPON POSSESSION LICENSE"; refPrefix = "WPN"; }
+        if (type === 'driver') { title = "COMMERCIAL DRIVER PERMIT"; refPrefix = "CDL"; }
+        if (type === 'business') { title = "BUSINESS OPERATION PERMIT"; refPrefix = "BIZ"; }
+        if (type === 'hunting') { title = "HUNTING PERMIT"; refPrefix = "HNT"; }
+
+        tableHtml += `<tr><td class="info-label">LICENSE HOLDER</td><td class="info-sep">:</td><td class="info-val">${name.toUpperCase()}</td></tr>`;
+        tableHtml += `<tr><td class="info-label">IDENTITY NUMBER</td><td class="info-sep">:</td><td class="info-val">${id}</td></tr>`;
+        tableHtml += `<tr><td class="info-label">RESIDENCE</td><td class="info-sep">:</td><td class="info-val">${addr}</td></tr>`;
+        tableHtml += `<tr><td class="info-label">PERMIT CLASS</td><td class="info-sep">:</td><td class="info-val">${pClass.toUpperCase()}</td></tr>`;
+        tableHtml += `<tr><td class="info-label">VALID UNTIL</td><td class="info-sep">:</td><td class="info-val" style="color:#b91c1c">${pExp}</td></tr>`;
+    }
+
+    // Render
+    document.getElementById('p-pmTitle').innerHTML = title;
+    document.getElementById('p-pmRef').innerText = `${refPrefix}-${new Date().getFullYear()}-${Math.floor(Math.random()*1000)}`;
+    document.getElementById('p-tableInfo').innerHTML = tableHtml;
+    document.getElementById('p-pmCond').innerText = cond;
+    document.getElementById('p-issueDate').innerText = new Date().toLocaleDateString('en-US', {weekday:'long', year:'numeric', month:'long', day:'numeric'});
+    document.getElementById('p-pmSign').innerText = sign.toUpperCase();
+    document.getElementById('p-pmRank').innerText = rank.toUpperCase();
+}
+
+// Init Function
+window.addEventListener('load', () => {
+    togglePermitInput();
+});
+
+/* === LEGAL RECORDS LOGIC === */
+let recIdCache = "";
+
+function toggleRecordMode() {
+    const t = document.getElementById('recType').value;
+    const inpCgc = document.getElementById('inp-cgc');
+    const inpCmr = document.getElementById('inp-cmr');
+    const cardCgc = document.getElementById('card-cgc');
+    const cardCmr = document.getElementById('card-cmr');
+
+    if(t === 'cgc') {
+        inpCgc.classList.remove('hidden');
+        inpCmr.classList.add('hidden');
+        cardCgc.style.display = 'flex';
+        cardCmr.style.display = 'none';
+    } else {
+        inpCgc.classList.add('hidden');
+        inpCmr.classList.remove('hidden');
+        cardCgc.style.display = 'none';
+        cardCmr.style.display = 'flex';
+    }
+    uRec();
+}
+
+function uRec() {
+    const type = document.getElementById('recType').value;
+    
+    // Shared Data
+    const name = document.getElementById('recName').value || "Unknown Subject";
+    const dob = document.getElementById('recDob').value || "DD/MM/YYYY";
+    const cit = document.getElementById('recCit').value || "San Andreas";
+    const idNum = document.getElementById('recId').value || "N/A";
+    const off = document.getElementById('recOff').value || "Officer";
+    const rank = document.getElementById('recRank').value || "Rank";
+
+    if(!recIdCache) recIdCache = Math.floor(Math.random() * 900000) + 100000;
+
+    if(type === 'cgc') {
+        // CGC Render
+        document.getElementById('p-cgcName').innerText = name.toUpperCase();
+        document.getElementById('p-cgcJur').innerText = document.getElementById('recJur').value || "San Andreas";
+        document.getElementById('p-cgcNum').innerText = "CGC-" + recIdCache;
+        document.getElementById('p-cgcExp').innerText = document.getElementById('recExp').value || "INDEFINITE";
+        document.getElementById('p-cgcSign').innerText = off;
+        document.getElementById('p-cgcRank').innerText = rank.toUpperCase();
+
+    } else {
+        // CMR Render
+        document.getElementById('p-cmrNum').innerText = "CMR-" + recIdCache;
+        document.getElementById('p-cmrDate').innerText = new Date().toLocaleDateString();
+        document.getElementById('p-cmrName').innerText = name.toUpperCase();
+        document.getElementById('p-cmrDob').innerText = dob;
+        document.getElementById('p-cmrCit').innerText = cit.toUpperCase();
+        document.getElementById('p-cmrId').innerText = idNum;
+
+        const fel = parseInt(document.getElementById('recFel').value) || 0;
+        const mis = parseInt(document.getElementById('recMis').value) || 0;
+        const total = fel + mis;
+        const last = document.getElementById('recLast').value || "NONE";
+        
+        document.getElementById('p-cmrTotal').innerText = total;
+        document.getElementById('p-cmrFel').innerText = fel;
+        document.getElementById('p-cmrMis').innerText = mis;
+        document.getElementById('p-cmrLast').innerText = last;
+        document.getElementById('p-cmrSign').innerText = off;
+
+        // Status Logic
+        const override = document.getElementById('recStatOv').value;
+        const statEl = document.getElementById('p-cmrStat');
+        
+        let status = "CLEAR";
+        let colorClass = "pill-green";
+
+        if(override !== 'auto') {
+            if(override === 'pending') { status = "PENDING"; colorClass = "pill-yellow"; }
+            if(override === 'active') { status = "ACTIVE RECORD"; colorClass = "pill-red"; }
+            if(override === 'clear') { status = "CLEAR"; colorClass = "pill-green"; }
+        } else {
+            if (total > 0) { status = "HAS RECORD"; colorClass = "pill-yellow"; }
+            if (fel > 0) { status = "HIGH RISK"; colorClass = "pill-red"; }
+        }
+
+        statEl.innerText = status;
+        statEl.className = "cmr-pill " + colorClass;
+    }
+}
+
+function dlRecord() {
+    const type = document.getElementById('recType').value;
+    const id = type === 'cgc' ? 'card-cgc' : 'card-cmr';
+    const bg = type === 'cgc' ? '#ffffff' : '#f4f4f5'; // CGC Putih, CMR Abu terang
+
+    dlImg(id, type.toUpperCase()); // Menggunakan fungsi dlImg utama yg sudah ada
+}
+
+// Init
+window.addEventListener('load', toggleRecordMode);
+
+
+/* === MEDICAL CERTIFICATE LOGIC === */
+let medRefCache = "";
+
+function uMed() {
+    if(!medRefCache) medRefCache = Math.floor(Math.random() * 900000) + 100000;
+    
+    // Header
+    document.getElementById('p-mdRef').innerText = "MED-" + medRefCache;
+    document.getElementById('p-mdDate').innerText = new Date().toLocaleDateString();
+
+    // Patient
+    document.getElementById('p-mdName').innerText = document.getElementById('mdName').value.toUpperCase() || "UNKNOWN";
+    document.getElementById('p-mdDob').innerText = document.getElementById('mdDob').value || "--/--/----";
+    document.getElementById('p-mdSex').innerText = document.getElementById('mdSex').value.substring(0,1);
+    document.getElementById('p-mdBlood').innerText = document.getElementById('mdBlood').value;
+
+    // Vitals & BMI
+    const h = document.getElementById('mdHgt').value;
+    const w = document.getElementById('mdWgt').value;
+    document.getElementById('p-mdHgt').innerText = h + " cm";
+    document.getElementById('p-mdWgt').innerText = w + " kg";
+    
+    // Auto BMI Calculation
+    if(h && w) {
+        const hm = h / 100;
+        const bmi = (w / (hm * hm)).toFixed(1);
+        document.getElementById('p-mdBmi').innerText = bmi;
+    } else {
+        document.getElementById('p-mdBmi').innerText = "N/A";
+    }
+
+    // Evaluation Pills Helper
+    const setPill = (id, val, txtPass, txtWarn, txtFail) => {
+        const el = document.getElementById(id);
+        el.className = "med-res"; // reset
+        if(val === 'pass') { el.classList.add('res-pass'); el.innerText = txtPass; }
+        if(val === 'warn') { el.classList.add('res-warn'); el.innerText = txtWarn; }
+        if(val === 'fail') { el.classList.add('res-fail'); el.innerText = txtFail; }
+    };
+
+    setPill('p-mdPhy', document.getElementById('mdPhy').value, "PASS", "OBSERVE", "FAIL");
+    setPill('p-mdPsy', document.getElementById('mdPsy').value, "STABLE", "UNSTABLE", "CRITICAL");
+    setPill('p-mdDrug', document.getElementById('mdDrug').value, "NEGATIVE", "-", "POSITIVE");
+
+    // Notes
+    document.getElementById('p-mdNotes').innerText = document.getElementById('mdNotes').value || "No clinical notes provided.";
+
+    // Final Status & Doctor
+    const stat = document.getElementById('mdStat').value;
+    const statEl = document.getElementById('p-mdStat');
+    statEl.innerText = document.getElementById('mdStat').options[document.getElementById('mdStat').selectedIndex].text;
+    
+    if(stat === 'fit') { statEl.style.color = "#15803d"; statEl.style.borderColor = "#15803d"; }
+    else if(stat === 'light') { statEl.style.color = "#d97706"; statEl.style.borderColor = "#d97706"; }
+    else { statEl.style.color = "#b91c1c"; statEl.style.borderColor = "#b91c1c"; }
+
+    const docName = document.getElementById('mdDoc').value || "Unknown";
+    document.getElementById('p-mdDoc').innerText = docName;
+    document.getElementById('p-mdDocSig').innerText = docName;
+    document.getElementById('p-mdLic').innerText = document.getElementById('mdLic').value || "PENDING";
+}
+
+// Pastikan dlImg support background putih untuk 'card-med' (sama seperti CGC)
+// Cukup gunakan fungsi dlImg yang ada, karena default background putih sudah diatur di CSS .legal-card
+
     </script>
 </body>
 </html>
